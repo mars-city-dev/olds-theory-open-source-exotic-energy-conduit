@@ -32,6 +32,6 @@ Olds-Casimir Propulsion: Generating thrust by manipulating vacuum pressure gradi
 
 This work is released into the Public Domain. I invite physicists, engineers, and visionaries to iterate, critique, and build upon these definitions without fear of litigation or patent encumbrance.
 
-Let the "Master Your Potential" movement belong to humanity.
+Let the "Master Your Potential" movement belong to humanity. ~ Lā'ibha Santulita Jivana Ma hum̐ om ~
 
 Authored by Christopher Olds
