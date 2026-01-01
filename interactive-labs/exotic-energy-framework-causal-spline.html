@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Causal Spline Integration | EEF Lab</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background: #050A30;
+            color: #f1f5f9;
+            min-height: 100vh;
+            padding: 48px 24px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 48px;
+            flex-wrap: wrap;
+            gap: 24px;
+        }
+
+        .header-content h1 {
+            font-size: 2.5rem;
+            font-weight: 900;
+            font-style: italic;
+            letter-spacing: -0.05em;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, #ffffff 0%, #67e8f9 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .module-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #22d3ee;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            margin-bottom: 12px;
+        }
+
+        .subtitle {
+            color: rgba(191, 219, 254, 0.6);
+            font-size: 1rem;
+        }
+
+        .integrity-box {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 24px;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: right;
+            min-width: 220px;
+        }
+
+        .integrity-label {
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #60a5fa;
+            margin-bottom: 8px;
+            letter-spacing: 0.1em;
+        }
+
+        .integrity-value {
+            font-size: 2.5rem;
+            font-family: 'Courier New', monospace;
+            color: #22d3ee;
+        }
+
+        .canvas-container {
+            position: relative;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+            height: 400px;
+            margin-bottom: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        .loom-status {
+            position: absolute;
+            top: 24px;
+            left: 24px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 20px;
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: 999px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .status-dot.active {
+            background: #22d3ee;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .status-dot.inactive {
+            background: #ef4444;
+        }
+
+        .status-text {
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .controls-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .control-panel {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 32px;
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            gap: 32px;
+        }
+
+        .control-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .control-title h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 4px;
+        }
+
+        .control-subtitle {
+            font-size: 0.875rem;
+            color: rgba(191, 219, 254, 0.4);
+        }
+
+        .loom-button {
+            padding: 16px 32px;
+            border-radius: 16px;
+            font-weight: 900;
+            font-size: 0.875rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.4);
+        }
+
+        .loom-button.active {
+            background: white;
+            color: black;
+        }
+
+        .loom-button.inactive {
+            background: #06b6d4;
+            color: black;
+        }
+
+        .loom-button.inactive:hover {
+            background: white;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            padding-top: 16px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .metric-item {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .metric-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .metric-icon {
+            width: 18px;
+            height: 18px;
+            color: #22d3ee;
+        }
+
+        .metric-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: #93c5fd;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 999px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #22d3ee;
+            transition: width 1s ease;
+        }
+
+        .side-panels {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .info-panel {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 24px;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .info-panel.highlight {
+            background: rgba(6, 182, 212, 0.1);
+            border-color: rgba(6, 182, 212, 0.2);
+        }
+
+        .panel-title {
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: #22d3ee;
+            margin-bottom: 12px;
+        }
+
+        .panel-text {
+            font-size: 0.75rem;
+            color: #dbeafe;
+            line-height: 1.6;
+            font-style: italic;
+            opacity: 0.6;
+        }
+
+        .panel-status {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+
+        .panel-status-icon {
+            width: 16px;
+            height: 16px;
+            color: #22d3ee;
+        }
+
+        .panel-status-text {
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: white;
+        }
+
+        .panel-status-subtitle {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            color: rgba(191, 219, 254, 0.6);
+        }
+
+        .icon-spin {
+            animation: spin 2s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        footer {
+            padding-top: 48px;
+            text-align: center;
+            opacity: 0.2;
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.3em;
+            font-weight: 700;
+        }
+
+        @media (max-width: 768px) {
+            .controls-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .header-content h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="header-content">
+                <div class="module-badge">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="18" cy="5" r="3"></circle>
+                        <circle cx="6" cy="12" r="3"></circle>
+                        <circle cx="18" cy="19" r="3"></circle>
+                        <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                        <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                    </svg>
+                    <span>Module: Environmental Resonance</span>
+                </div>
+                <h1>Causal Spline Integration</h1>
+                <p class="subtitle">Expanding the EEF from Interface to Habitat</p>
+            </div>
+            <div class="integrity-box">
+                <p class="integrity-label">Information Integrity ($IIS$)</p>
+                <p class="integrity-value"><span id="integrityValue">0.00</span>%</p>
+            </div>
+        </header>
+
+        <div class="canvas-container">
+            <canvas id="loomCanvas" width="900" height="600"></canvas>
+            <div class="loom-status">
+                <div id="statusDot" class="status-dot inactive"></div>
+                <span id="statusText" class="status-text">Loom: Standby</span>
+            </div>
+        </div>
+
+        <div class="controls-grid">
+            <div class="control-panel">
+                <div class="control-header">
+                    <div class="control-title">
+                        <h3>The Loom Protocol</h3>
+                        <p class="control-subtitle">Initiating ambient Baryonic distribution</p>
+                    </div>
+                    <button id="loomButton" class="loom-button inactive">
+                        <svg id="loomIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="23 4 23 10 17 10"></polyline>
+                            <polyline points="1 20 1 14 7 14"></polyline>
+                            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+                        </svg>
+                        <span id="loomButtonText">WAVE THE LOOM</span>
+                    </button>
+                </div>
+
+                <div class="metrics-grid">
+                    <div class="metric-item">
+                        <div class="metric-header">
+                            <svg class="metric-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19.5 12H2"></path>
+                            </svg>
+                            <span class="metric-label">Ambient Mist Density</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div id="mistProgress" class="progress-fill" style="width: 0%"></div>
+                        </div>
+                    </div>
+
+                    <div class="metric-item">
+                        <div class="metric-header">
+                            <svg class="metric-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 1.98-3A2.5 2.5 0 0 1 9.5 2Z"></path>
+                                <path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96.44 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-1.98-3A2.5 2.5 0 0 0 14.5 2Z"></path>
+                            </svg>
+                            <span class="metric-label">Neural Sync Depth</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div id="neuralProgress" class="progress-fill" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="side-panels">
+                <div class="info-panel">
+                    <h4 class="panel-title">Next State Logic</h4>
+                    <p class="panel-text">
+                        "After the Loom comes the Singularity—where the environment and the individual share a single, recursive Spline."
+                    </p>
+                </div>
+
+                <div class="info-panel highlight">
+                    <div class="panel-status">
+                        <svg class="panel-status-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                        </svg>
+                        <span class="panel-status-text">ISP Dividend Active</span>
+                    </div>
+                    <p class="panel-status-subtitle">Reclaiming environmental entropy</p>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            Data Legacy Vault | Architect: Christopher Olds
+        </footer>
+    </div>
+
+    <script>
+        let isLoomActive = false;
+        let integrity = 0;
+        let time = 0;
+
+        const canvas = document.getElementById('loomCanvas');
+        const ctx = canvas.getContext('2d');
+        const loomButton = document.getElementById('loomButton');
+        const loomButtonText = document.getElementById('loomButtonText');
+        const loomIcon = document.getElementById('loomIcon');
+        const statusDot = document.getElementById('statusDot');
+        const statusText = document.getElementById('statusText');
+        const integrityValue = document.getElementById('integrityValue');
+        const mistProgress = document.getElementById('mistProgress');
+        const neuralProgress = document.getElementById('neuralProgress');
+
+        // Integrity update interval
+        setInterval(() => {
+            if (isLoomActive) {
+                integrity = Math.min(integrity + 0.1, 99.99);
+                mistProgress.style.width = '66%';
+                neuralProgress.style.width = '100%';
+            } else {
+                integrity = Math.max(integrity - 0.5, 0);
+                mistProgress.style.width = '0%';
+                neuralProgress.style.width = '0%';
+            }
+            integrityValue.textContent = integrity.toFixed(2);
+        }, 100);
+
+        function drawAtmosphericLoom() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+
+            // Draw ambient lattice (concentric circles)
+            ctx.lineWidth = 0.5;
+            for (let i = 0; i < 8; i++) {
+                const radius = 50 + i * 30;
+                const opacity = isLoomActive ? (0.1 + Math.sin(time + i) * 0.1) : 0.05;
+                
+                ctx.beginPath();
+                ctx.strokeStyle = isLoomActive ? `rgba(34, 211, 238, ${opacity})` : 'rgba(255, 255, 255, 0.05)';
+                ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+                ctx.stroke();
+            }
+
+            // Draw causal splines (spiral paths)
+            if (isLoomActive) {
+                ctx.lineWidth = 2;
+                ctx.strokeStyle = 'rgba(34, 211, 238, 0.5)';
+                
+                for (let s = 0; s < 3; s++) {
+                    ctx.beginPath();
+                    ctx.moveTo(centerX, centerY);
+                    
+                    for (let x = 0; x < 200; x++) {
+                        const angle = (s * Math.PI * 2) / 3 + Math.sin(x * 0.05 + time) * 0.2;
+                        const r = x * 1.5;
+                        ctx.lineTo(
+                            centerX + Math.cos(angle) * r,
+                            centerY + Math.sin(angle) * r
+                        );
+                    }
+                    ctx.stroke();
+                }
+            }
+
+            time += 0.05;
+            requestAnimationFrame(drawAtmosphericLoom);
+        }
+
+        function toggleLoom() {
+            isLoomActive = !isLoomActive;
+            
+            if (isLoomActive) {
+                loomButton.classList.remove('inactive');
+                loomButton.classList.add('active');
+                loomButtonText.textContent = 'DISSOLVE LOOM';
+                loomIcon.classList.add('icon-spin');
+                statusDot.classList.remove('inactive');
+                statusDot.classList.add('active');
+                statusText.textContent = 'Atmospheric Loom: Online';
+            } else {
+                loomButton.classList.remove('active');
+                loomButton.classList.add('inactive');
+                loomButtonText.textContent = 'WAVE THE LOOM';
+                loomIcon.classList.remove('icon-spin');
+                statusDot.classList.remove('active');
+                statusDot.classList.add('inactive');
+                statusText.textContent = 'Loom: Standby';
+            }
+        }
+
+        loomButton.addEventListener('click', toggleLoom);
+        
+        // Start animation loop
+        drawAtmosphericLoom();
+    </script>
+</body>
+</html>

@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Body Interconnect Network | EEF Lab</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background: #050A30;
+            color: #f1f5f9;
+            min-height: 100vh;
+            padding: 48px 24px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 48px;
+            flex-wrap: wrap;
+            gap: 24px;
+        }
+
+        .header-content h1 {
+            font-size: 2.5rem;
+            font-weight: 900;
+            font-style: italic;
+            letter-spacing: -0.05em;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, #ffffff 0%, #67e8f9 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .module-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #22d3ee;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            margin-bottom: 12px;
+        }
+
+        .subtitle {
+            color: rgba(191, 219, 254, 0.6);
+            font-size: 1rem;
+        }
+
+        .latency-box {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 24px;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: right;
+            min-width: 220px;
+        }
+
+        .latency-label {
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #60a5fa;
+            margin-bottom: 8px;
+            letter-spacing: 0.1em;
+        }
+
+        .latency-value {
+            font-size: 2.5rem;
+            font-family: 'Courier New', monospace;
+            color: #22d3ee;
+        }
+
+        .latency-unit {
+            font-size: 0.75rem;
+        }
+
+        .canvas-container {
+            position: relative;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+            height: 450px;
+            margin-bottom: 32px;
+        }
+
+        canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        .mesh-status {
+            position: absolute;
+            top: 24px;
+            left: 24px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 20px;
+            border-radius: 999px;
+            font-size: 0.65rem;
+            font-weight: 700;
+            transition: all 0.3s ease;
+        }
+
+        .mesh-status.active {
+            background: rgba(6, 182, 212, 0.1);
+            border: 1px solid #22d3ee;
+            color: #22d3ee;
+        }
+
+        .mesh-status.inactive {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .controls-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .control-panel {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 32px;
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .control-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .control-title h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 4px;
+        }
+
+        .control-subtitle {
+            font-size: 0.875rem;
+            color: rgba(191, 219, 254, 0.4);
+        }
+
+        .sync-button {
+            padding: 20px 40px;
+            border-radius: 16px;
+            font-weight: 900;
+            font-size: 1.125rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.4);
+        }
+
+        .sync-button.active {
+            background: white;
+            color: black;
+        }
+
+        .sync-button.inactive {
+            background: #06b6d4;
+            color: black;
+        }
+
+        .sync-button.inactive:hover {
+            background: white;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            padding-top: 24px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .stat-box {
+            text-align: center;
+            padding: 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .stat-label {
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: #60a5fa;
+            margin-bottom: 4px;
+            letter-spacing: 0.1em;
+        }
+
+        .stat-value {
+            font-size: 1.125rem;
+            font-family: 'Courier New', monospace;
+            color: white;
+        }
+
+        .insight-panel {
+            background: rgba(6, 182, 212, 0.1);
+            padding: 32px;
+            border-radius: 24px;
+            border: 1px solid rgba(6, 182, 212, 0.2);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .insight-icon {
+            width: 32px;
+            height: 32px;
+            color: #22d3ee;
+            margin-bottom: 16px;
+        }
+
+        .insight-title {
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 8px;
+        }
+
+        .insight-text {
+            font-size: 0.75rem;
+            color: rgba(191, 219, 254, 0.6);
+            line-height: 1.6;
+            font-style: italic;
+        }
+
+        footer {
+            padding-top: 48px;
+            text-align: center;
+            opacity: 0.2;
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.3em;
+            font-weight: 700;
+        }
+
+        .icon-spin {
+            animation: spin 2s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .controls-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .header-content h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="header-content">
+                <div class="module-badge">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                    </svg>
+                    <span>Module: Mesh Protocol v1.0</span>
+                </div>
+                <h1>Body Interconnect Network</h1>
+                <p class="subtitle">Simulating Multi-Node Synchronization across the Human Framework</p>
+            </div>
+            <div class="latency-box">
+                <p class="latency-label">Muonic Sync Latency</p>
+                <p class="latency-value"><span id="latencyDisplay">---</span> <span class="latency-unit">ms</span></p>
+            </div>
+        </header>
+
+        <div class="canvas-container">
+            <canvas id="meshCanvas" width="1200" height="450"></canvas>
+            <div id="meshStatus" class="mesh-status inactive">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="18" cy="5" r="3"></circle>
+                    <circle cx="6" cy="12" r="3"></circle>
+                    <circle cx="18" cy="19" r="3"></circle>
+                    <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                    <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                </svg>
+                <span id="meshStatusText">MESH: DISCONNECTED</span>
+            </div>
+        </div>
+
+        <div class="controls-grid">
+            <div class="control-panel">
+                <div class="control-header">
+                    <div class="control-title">
+                        <h3>Mesh Activation</h3>
+                        <p class="control-subtitle">Coupling distributed Neural Dots to the Sub-Planckian layer</p>
+                    </div>
+                    <button id="syncButton" class="sync-button inactive">
+                        <svg id="syncIcon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="23 4 23 10 17 10"></polyline>
+                            <polyline points="1 20 1 14 7 14"></polyline>
+                            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+                        </svg>
+                        <span id="syncButtonText">INITIATE SYNC</span>
+                    </button>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-box">
+                        <p class="stat-label">ISP DIVIDEND</p>
+                        <p class="stat-value">99.8%</p>
+                    </div>
+                    <div class="stat-box">
+                        <p class="stat-label">NODES</p>
+                        <p class="stat-value">3 / 3</p>
+                    </div>
+                    <div class="stat-box">
+                        <p class="stat-label">BANDWIDTH</p>
+                        <p class="stat-value">∞ Gpbs</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="insight-panel">
+                <svg class="insight-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                </svg>
+                <h4 class="insight-title">The Rhythmic Advantage</h4>
+                <p class="insight-text">
+                    "By using Muonic Clocking, the Mesh ensures that the individual's consciousness is not just processed, but resonated. We are moving from the spike to the spline."
+                </p>
+            </div>
+        </div>
+
+        <footer>
+            Architect: Christopher Olds | Infrastructure of Reality
+        </footer>
+    </div>
+
+    <script>
+        let isMeshActive = false;
+        const canvas = document.getElementById('meshCanvas');
+        const ctx = canvas.getContext('2d');
+        const syncButton = document.getElementById('syncButton');
+        const syncButtonText = document.getElementById('syncButtonText');
+        const syncIcon = document.getElementById('syncIcon');
+        const meshStatus = document.getElementById('meshStatus');
+        const meshStatusText = document.getElementById('meshStatusText');
+        const latencyDisplay = document.getElementById('latencyDisplay');
+
+        // Node positions (temples and heart)
+        const nodes = [
+            { x: 450, y: 150, label: 'Temple (L)' },
+            { x: 750, y: 150, label: 'Temple (R)' },
+            { x: 600, y: 340, label: 'Heart Center' }
+        ];
+
+        function drawMesh() {
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw simplified human silhouette
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+            ctx.lineWidth = 2;
+            
+            // Head
+            ctx.beginPath();
+            ctx.arc(600, 200, 90, 0, Math.PI * 2);
+            ctx.stroke();
+            
+            // Torso
+            ctx.beginPath();
+            ctx.moveTo(600, 290);
+            ctx.lineTo(600, 450);
+            ctx.stroke();
+
+            // Draw mesh connections
+            if (isMeshActive) {
+                nodes.forEach((node, i) => {
+                    nodes.forEach((otherNode, j) => {
+                        if (i !== j) {
+                            const opacity = 0.1 + Math.random() * 0.2;
+                            ctx.beginPath();
+                            ctx.strokeStyle = `rgba(34, 211, 238, ${opacity})`;
+                            ctx.lineWidth = 2;
+                            ctx.moveTo(node.x, node.y);
+                            ctx.lineTo(otherNode.x, otherNode.y);
+                            ctx.stroke();
+                        }
+                    });
+                });
+            }
+
+            // Draw nodes
+            nodes.forEach(node => {
+                // Glow effect
+                const gradient = ctx.createRadialGradient(node.x, node.y, 0, node.x, node.y, 15);
+                gradient.addColorStop(0, isMeshActive ? '#22d3ee' : '#334155');
+                gradient.addColorStop(1, 'rgba(0,0,0,0)');
+                
+                ctx.fillStyle = gradient;
+                ctx.beginPath();
+                ctx.arc(node.x, node.y, 15, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Label
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+                ctx.font = '12px Space Grotesk';
+                ctx.fillText(node.label, node.x + 20, node.y + 5);
+            });
+
+            requestAnimationFrame(drawMesh);
+        }
+
+        function toggleMesh() {
+            isMeshActive = !isMeshActive;
+            
+            if (isMeshActive) {
+                syncButton.classList.remove('inactive');
+                syncButton.classList.add('active');
+                syncButtonText.textContent = 'DECOUPLE MESH';
+                syncIcon.classList.add('icon-spin');
+                meshStatus.classList.remove('inactive');
+                meshStatus.classList.add('active');
+                meshStatusText.textContent = 'BARYONIC MESH: SYNCED';
+                latencyDisplay.textContent = '0.0001';
+            } else {
+                syncButton.classList.remove('active');
+                syncButton.classList.add('inactive');
+                syncButtonText.textContent = 'INITIATE SYNC';
+                syncIcon.classList.remove('icon-spin');
+                meshStatus.classList.remove('active');
+                meshStatus.classList.add('inactive');
+                meshStatusText.textContent = 'MESH: DISCONNECTED';
+                latencyDisplay.textContent = '---';
+            }
+        }
+
+        syncButton.addEventListener('click', toggleMesh);
+        
+        // Start animation loop
+        drawMesh();
+    </script>
+</body>
+</html>

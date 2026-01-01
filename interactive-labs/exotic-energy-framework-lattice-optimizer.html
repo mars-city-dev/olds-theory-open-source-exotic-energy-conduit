@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lattice Optimization Engine | EEF Lab</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background: #050A30;
+            color: #f1f5f9;
+            min-height: 100vh;
+            padding: 48px 24px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 48px;
+            flex-wrap: wrap;
+            gap: 24px;
+        }
+
+        .header-content h1 {
+            font-size: 2.5rem;
+            font-weight: 900;
+            font-style: italic;
+            letter-spacing: -0.05em;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, #ffffff 0%, #67e8f9 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .module-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #22d3ee;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            margin-bottom: 12px;
+        }
+
+        .subtitle {
+            color: rgba(191, 219, 254, 0.6);
+            font-size: 1rem;
+        }
+
+        .efficiency-box {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 24px;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: right;
+            min-width: 200px;
+        }
+
+        .efficiency-label {
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #60a5fa;
+            margin-bottom: 8px;
+            letter-spacing: 0.1em;
+        }
+
+        .efficiency-value {
+            font-size: 2.5rem;
+            font-family: 'Courier New', monospace;
+            color: #22d3ee;
+        }
+
+        .canvas-container {
+            position: relative;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+            height: 400px;
+            margin-bottom: 32px;
+        }
+
+        canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        .status-badge {
+            position: absolute;
+            bottom: 16px;
+            left: 16px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: 999px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .status-dot.active {
+            background: #22d3ee;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .status-dot.inactive {
+            background: #ef4444;
+        }
+
+        .status-text {
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .controls-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .control-panel {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 32px;
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            gap: 32px;
+        }
+
+        .controls-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 32px;
+        }
+
+        .control-group label {
+            display: block;
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #60a5fa;
+            margin-bottom: 16px;
+            letter-spacing: 0.15em;
+        }
+
+        .geometry-buttons {
+            display: flex;
+            gap: 16px;
+        }
+
+        .geometry-btn {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            padding: 16px;
+            border-radius: 16px;
+            border: 1px solid;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .geometry-btn.active {
+            background: rgba(6, 182, 212, 0.2);
+            border-color: #22d3ee;
+            color: #22d3ee;
+        }
+
+        .geometry-btn.inactive {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .geometry-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .geometry-icon {
+            width: 24px;
+            height: 24px;
+        }
+
+        .geometry-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .slider-container {
+            margin-bottom: 16px;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            outline: none;
+            cursor: pointer;
+            -webkit-appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #22d3ee;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: #22d3ee;
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+        }
+
+        .slider-display {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: 'Courier New', monospace;
+            font-size: 0.875rem;
+            color: #22d3ee;
+        }
+
+        .slider-value {
+            background: rgba(6, 182, 212, 0.2);
+            padding: 8px 16px;
+            border-radius: 8px;
+            border: 1px solid rgba(34, 211, 238, 0.3);
+        }
+
+        .resonance-button {
+            width: 100%;
+            padding: 24px;
+            border-radius: 16px;
+            font-weight: 900;
+            font-size: 1.25rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.4);
+        }
+
+        .resonance-button.active {
+            background: white;
+            color: black;
+        }
+
+        .resonance-button.inactive {
+            background: #06b6d4;
+            color: black;
+        }
+
+        .resonance-button.inactive:hover {
+            background: white;
+        }
+
+        .side-panels {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .info-panel {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 24px;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .info-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .info-icon {
+            width: 18px;
+            height: 18px;
+            color: #22d3ee;
+        }
+
+        .info-title {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: white;
+        }
+
+        .info-text {
+            font-size: 0.75rem;
+            color: rgba(191, 219, 254, 0.4);
+            line-height: 1.6;
+            font-style: italic;
+        }
+
+        .coherence-display {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        .coherence-value {
+            font-size: 2rem;
+            font-family: 'Courier New', monospace;
+            color: white;
+        }
+
+        .icon-spin {
+            animation: spin 2s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        footer {
+            padding-top: 48px;
+            text-align: center;
+            opacity: 0.2;
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.3em;
+            font-weight: 700;
+        }
+
+        @media (max-width: 768px) {
+            .controls-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .controls-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .header-content h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="header-content">
+                <div class="module-badge">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                        <polyline points="2 17 12 22 22 17"></polyline>
+                        <polyline points="2 12 12 17 22 12"></polyline>
+                    </svg>
+                    <span>Module: Lattice Engineering</span>
+                </div>
+                <h1>Lattice Optimization Engine</h1>
+                <p class="subtitle">Calculating Geometric Harmonics for Quark Flavor-Flips</p>
+            </div>
+            <div class="efficiency-box">
+                <p class="efficiency-label">Theoretical Efficiency</p>
+                <p class="efficiency-value"><span id="efficiencyDisplay">0.0</span>%</p>
+            </div>
+        </header>
+
+        <div class="canvas-container">
+            <canvas id="latticeCanvas" width="1200" height="400"></canvas>
+            <div class="status-badge">
+                <div id="statusDot" class="status-dot inactive"></div>
+                <span id="statusText" class="status-text">Searching for Fret</span>
+            </div>
+        </div>
+
+        <div class="controls-grid">
+            <div class="control-panel">
+                <div class="controls-row">
+                    <div class="control-group">
+                        <label>Lattice Geometry</label>
+                        <div class="geometry-buttons">
+                            <button id="hexBtn" class="geometry-btn inactive" onclick="setGeometry('hexagonal')">
+                                <svg class="geometry-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                                </svg>
+                                <span class="geometry-label">Hexagonal</span>
+                            </button>
+                            <button id="tetBtn" class="geometry-btn active" onclick="setGeometry('tetrahedral')">
+                                <svg class="geometry-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                                </svg>
+                                <span class="geometry-label">Tetrahedral</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <label>Resonance Frequency (THz)</label>
+                        <div class="slider-container">
+                            <input type="range" id="freqSlider" min="5" max="25" step="0.1" value="10.2">
+                        </div>
+                        <div class="slider-display">
+                            <span>5.0</span>
+                            <span class="slider-value"><span id="freqValue">10.2</span> THz</span>
+                            <span>25.0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <button id="resonanceBtn" class="resonance-button inactive">
+                    <svg id="musicIcon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 18V5l12-2v13"></path>
+                        <circle cx="6" cy="18" r="3"></circle>
+                        <circle cx="18" cy="16" r="3"></circle>
+                    </svg>
+                    <span id="resonanceBtnText">INITIATE RESONANCE</span>
+                </button>
+            </div>
+
+            <div class="side-panels">
+                <div class="info-panel">
+                    <div class="info-header">
+                        <svg class="info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                        </svg>
+                        <h3 class="info-title">State-Shift Dividend</h3>
+                    </div>
+                    <p class="info-text">
+                        "Tetrahedral lattices provide superior $u \to s$ stability by distributing string tension across four geometric planes."
+                    </p>
+                </div>
+
+                <div class="info-panel">
+                    <div class="info-header">
+                        <svg class="info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
+                            <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path>
+                            <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path>
+                        </svg>
+                        <h3 class="info-title">Lattice Coherence</h3>
+                    </div>
+                    <div class="coherence-display">
+                        <p class="coherence-value"><span id="coherenceValue">0.0</span>%</p>
+                        <svg id="coherenceSpin" class="info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="23 4 23 10 17 10"></polyline>
+                            <polyline points="1 20 1 14 7 14"></polyline>
+                            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            Data Legacy Vault | Architect: Christopher Olds
+        </footer>
+    </div>
+
+    <script>
+        let geometry = 'tetrahedral';
+        let frequency = 10.2;
+        let isActive = false;
+        let efficiency = 0;
+        let time = 0;
+
+        const canvas = document.getElementById('latticeCanvas');
+        const ctx = canvas.getContext('2d');
+        const freqSlider = document.getElementById('freqSlider');
+        const freqValue = document.getElementById('freqValue');
+        const resonanceBtn = document.getElementById('resonanceBtn');
+        const resonanceBtnText = document.getElementById('resonanceBtnText');
+        const musicIcon = document.getElementById('musicIcon');
+        const statusDot = document.getElementById('statusDot');
+        const statusText = document.getElementById('statusText');
+        const efficiencyDisplay = document.getElementById('efficiencyDisplay');
+        const coherenceValue = document.getElementById('coherenceValue');
+        const coherenceSpin = document.getElementById('coherenceSpin');
+        const hexBtn = document.getElementById('hexBtn');
+        const tetBtn = document.getElementById('tetBtn');
+
+        function setGeometry(geo) {
+            geometry = geo;
+            if (geo === 'hexagonal') {
+                hexBtn.classList.remove('inactive');
+                hexBtn.classList.add('active');
+                tetBtn.classList.remove('active');
+                tetBtn.classList.add('inactive');
+            } else {
+                tetBtn.classList.remove('inactive');
+                tetBtn.classList.add('active');
+                hexBtn.classList.remove('active');
+                hexBtn.classList.add('inactive');
+            }
+            updateEfficiency();
+        }
+
+        function updateEfficiency() {
+            if (isActive) {
+                const optimalFreq = 14.5;
+                const dist = Math.abs(frequency - optimalFreq);
+                const baseEff = geometry === 'tetrahedral' ? 98 : 92;
+                efficiency = Math.max(0, baseEff - dist * 5);
+                coherenceValue.textContent = '99.9';
+            } else {
+                efficiency = 0;
+                coherenceValue.textContent = '0.0';
+            }
+            efficiencyDisplay.textContent = efficiency.toFixed(1);
+        }
+
+        freqSlider.addEventListener('input', (e) => {
+            frequency = parseFloat(e.target.value);
+            freqValue.textContent = frequency.toFixed(1);
+            updateEfficiency();
+        });
+
+        resonanceBtn.addEventListener('click', () => {
+            isActive = !isActive;
+            
+            if (isActive) {
+                resonanceBtn.classList.remove('inactive');
+                resonanceBtn.classList.add('active');
+                resonanceBtnText.textContent = 'DAMPEN HARMONICS';
+                statusDot.classList.remove('inactive');
+                statusDot.classList.add('active');
+                statusText.textContent = 'Resonance Locked';
+                coherenceSpin.classList.add('icon-spin');
+            } else {
+                resonanceBtn.classList.remove('active');
+                resonanceBtn.classList.add('inactive');
+                resonanceBtnText.textContent = 'INITIATE RESONANCE';
+                statusDot.classList.remove('active');
+                statusDot.classList.add('inactive');
+                statusText.textContent = 'Searching for Fret';
+                coherenceSpin.classList.remove('icon-spin');
+            }
+            
+            updateEfficiency();
+        });
+
+        function drawLattice() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            const size = 30;
+            const rows = 6;
+            const cols = 8;
+
+            for (let r = 0; r < rows; r++) {
+                for (let c = 0; c < cols; c++) {
+                    const x = 90 + c * 120 + (r % 2 === 0 ? 0 : 60);
+                    const y = 60 + r * 60;
+
+                    ctx.beginPath();
+                    const opacity = isActive ? (0.1 + Math.sin(time + c) * 0.1) : 0.05;
+                    ctx.strokeStyle = isActive ? `rgba(34, 211, 238, ${opacity})` : 'rgba(255, 255, 255, 0.05)';
+                    ctx.lineWidth = 1.5;
+
+                    if (geometry === 'hexagonal') {
+                        // Draw hexagon
+                        for (let i = 0; i < 6; i++) {
+                            const angle = (i * Math.PI) / 3;
+                            const px = x + size * Math.cos(angle);
+                            const py = y + size * Math.sin(angle);
+                            if (i === 0) ctx.moveTo(px, py);
+                            else ctx.lineTo(px, py);
+                        }
+                    } else {
+                        // Draw triangle (tetrahedral projection)
+                        for (let i = 0; i < 3; i++) {
+                            const angle = (i * 2 * Math.PI) / 3 - Math.PI / 2;
+                            const px = x + size * Math.cos(angle);
+                            const py = y + size * Math.sin(angle);
+                            if (i === 0) ctx.moveTo(px, py);
+                            else ctx.lineTo(px, py);
+                        }
+                    }
+                    ctx.closePath();
+                    ctx.stroke();
+
+                    // Resonance nodes
+                    if (isActive && Math.random() > 0.95) {
+                        ctx.fillStyle = '#22d3ee';
+                        ctx.beginPath();
+                        ctx.arc(x, y, 3, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+                }
+            }
+
+            time += frequency * 0.01;
+            requestAnimationFrame(drawLattice);
+        }
+
+        // Start animation
+        drawLattice();
+    </script>
+</body>
+</html>

@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Olds Framework | Logistical Exotic Energy Architecture</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+
+    <!-- Chosen Palette: Void Resonance (Deep Black + Engineering Indigo + Energy Amber) -->
+    <!-- Application Structure Plan: 
+         1. Hero/Manifesto: Philosophical introduction.
+         2. The Quaternary Engine: Step-by-step logic progression.
+         3. Dodeca-Logic Lab: Interactive 12-operator suite with Radar Chart.
+         4. ✨ Intention & Manifestation Lab (NEW): AI-powered interface using Gemini to transcode natural language into Oldsian Logic.
+         5. Vacuum Simulator: Quantitative energy extraction dashboard.
+         6. ✨ Harmonic Assistant (NEW): Floating LLM-powered side-panel for contextual Q&A.
+    -->
+    <!-- Visualization & Content Choices:
+         1. Radar Chart (Chart.js): Visualizing Dodeca-set operator balance.
+         2. Line Charts (Chart.js): Modeling depletion collapse and extraction yield.
+         3. 3D Plot (Plotly): Tetrahedral lattice anchors.
+         4. Gemini LLM (gemini-2.5-flash-preview-09-2025): Transcoding natural language intentions and providing framework explanations.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+    <style>
+        :root {
+            --bg-void: #0a0a0a;
+            --text-silver: #e5e7eb;
+            --accent-indigo: #6366f1;
+            --accent-amber: #fbbf24;
+            --surface-dark: #171717;
+            --surface-muted: #1c1917;
+            --border-dim: #262626;
+        }
+        
+        body {
+            background-color: var(--bg-void);
+            color: var(--text-silver);
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        h1, h2, h3, .serif-font {
+            font-family: 'Cormorant Garamond', serif;
+        }
+
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            height: 350px;
+            max-height: 400px;
+            margin: 0 auto;
+        }
+
+        .glass-panel {
+            background: rgba(23, 23, 23, 0.8);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border-dim);
+            box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.5);
+        }
+
+        .operator-btn {
+            background-color: var(--surface-dark);
+            border: 1px solid var(--border-dim);
+            color: #a3a3a3;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .operator-btn:hover {
+            transform: translateY(-2px);
+            border-color: var(--accent-indigo);
+            color: white;
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.2);
+        }
+        .operator-btn.active {
+            background-color: var(--accent-indigo);
+            color: white;
+            border-color: var(--accent-indigo);
+            box-shadow: 0 0 30px rgba(99, 102, 241, 0.4);
+        }
+
+        .step-indicator {
+            background-color: var(--surface-dark);
+            border: 1px solid var(--border-dim);
+            transition: all 0.5s ease;
+        }
+        .step-indicator.active-step {
+            background-color: var(--accent-amber);
+            border-color: var(--accent-amber);
+            color: var(--bg-void);
+        }
+
+        .loading-shimmer {
+            background: linear-gradient(90deg, #171717 25%, #262626 50%, #171717 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+        }
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-void); }
+        ::-webkit-scrollbar-thumb { background: #262626; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #404040; }
+    </style>
+</head>
+<body class="antialiased min-h-screen flex flex-col">
+
+    <!-- Navigation -->
+    <nav class="sticky top-0 z-50 glass-panel border-b border-neutral-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <span class="text-2xl font-bold serif-font text-white tracking-tight">The Olds Framework</span>
+                </div>
+                <div class="hidden sm:flex space-x-8 items-center">
+                    <button onclick="scrollToSection('manifesto')" class="nav-link px-3 py-2 text-sm font-medium hover:text-indigo-400 transition">Manifesto</button>
+                    <button onclick="scrollToSection('quaternary')" class="nav-link px-3 py-2 text-sm font-medium hover:text-indigo-400 transition">Engine</button>
+                    <button onclick="scrollToSection('dodeca')" class="nav-link px-3 py-2 text-sm font-medium hover:text-indigo-400 transition">Dodeca-Logic</button>
+                    <button onclick="scrollToSection('ai-lab')" class="nav-link px-3 py-2 text-sm font-medium text-amber-400 hover:text-amber-300 transition italic">✨ Intention Lab</button>
+                    <button onclick="scrollToSection('extraction')" class="nav-link px-3 py-2 text-sm font-medium hover:text-indigo-400 transition">Extraction</button>
+                </div>
+                <div class="flex items-center sm:hidden">
+                    <button onclick="toggleMobileMenu()" class="text-neutral-400 hover:text-white">
+                        <span class="text-2xl">☰</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero / Manifesto Section -->
+    <section id="manifesto" class="relative pt-24 pb-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
+        <div class="text-center max-w-3xl mx-auto">
+            <h1 class="text-5xl md:text-7xl font-bold text-white mb-8 leading-tight">
+                Architecture of <span class="text-indigo-500 font-light">Logistical</span> <span class="text-amber-500 italic">Exotic Energy</span>
+            </h1>
+            <p class="mt-4 text-2xl text-stone-400 serif-font italic">
+                "We are the engineers of the unseen, and the poets of the absolute."
+            </p>
+            <p class="mt-8 text-lg text-stone-300 leading-relaxed font-light">
+                Founded by <strong>Christopher Olds</strong>. By bridging engineering precision and poetic intuition, we program reality itself.
+            </p>
+        </div>
+    </section>
+
+    <!-- ✨ Intention Lab (AI Section) -->
+    <section id="ai-lab" class="py-24 bg-neutral-900/50 border-y border-neutral-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                <div>
+                    <h2 class="text-4xl font-bold text-white mb-6">✨ Intention & Manifestation Lab</h2>
+                    <p class="text-stone-400 mb-8 leading-relaxed">
+                        Input your natural language objective. The Oldsian AI will transcode your desire into the <strong>Quaternary Foundations</strong> and the <strong>Dodeca-Set</strong> logic required to override entropic friction.
+                    </p>
+                    <div class="space-y-4">
+                        <textarea id="ai-intention-input" class="w-full bg-black border border-neutral-700 rounded-xl p-4 text-stone-200 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 outline-none transition h-32" placeholder="Example: I want to eliminate gravitational drag in a localized field..."></textarea>
+                        <button onclick="transcodeIntention()" id="transcode-btn" class="w-full bg-amber-600 hover:bg-amber-500 text-white font-bold py-4 rounded-xl shadow-lg transition-all flex items-center justify-center gap-2">
+                            ✨ Transcode Intention
+                        </button>
+                    </div>
+                </div>
+                <div id="ai-result-panel" class="glass-panel p-8 rounded-2xl min-h-[400px] flex flex-col">
+                    <div id="ai-placeholder" class="m-auto text-center space-y-4">
+                        <div class="text-4xl opacity-20">📡</div>
+                        <p class="text-stone-500 font-mono text-xs uppercase tracking-widest">Awaiting Sub-Planckian Input</p>
+                    </div>
+                    <div id="ai-loading" class="hidden m-auto w-full space-y-4">
+                        <div class="h-4 w-3/4 loading-shimmer rounded"></div>
+                        <div class="h-4 w-1/2 loading-shimmer rounded"></div>
+                        <div class="h-20 w-full loading-shimmer rounded"></div>
+                        <p class="text-center text-amber-500 font-mono text-xs animate-pulse">Calculating Delta Shift...</p>
+                    </div>
+                    <div id="ai-content" class="hidden">
+                        <div class="flex justify-between items-center mb-6">
+                            <span class="text-xs text-amber-500 font-mono font-bold tracking-widest uppercase">Transcoding Output</span>
+                            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                        </div>
+                        <div id="ai-response-text" class="text-stone-300 font-light leading-relaxed whitespace-pre-line text-sm border-l border-amber-500/30 pl-4 mb-6 italic"></div>
+                        <div id="ai-logic-grid" class="grid grid-cols-2 gap-3 mt-4"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Quaternary Engine Section -->
+    <section id="quaternary" class="py-24 bg-black border-b border-neutral-900">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-4xl font-bold text-white mb-12 text-center md:text-left">The Quaternary Engine</h2>
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
+                <div class="lg:col-span-4 space-y-4">
+                    <button onclick="activateAspect(0)" class="step-indicator active-step w-full text-left p-6 rounded-xl flex items-center justify-between">
+                        <div><span class="block text-xs uppercase tracking-widest opacity-60">1st Aspect</span><span class="text-xl font-bold">Harmonic Induction</span></div>
+                        <span class="text-2xl">⚡</span>
+                    </button>
+                    <button onclick="activateAspect(1)" class="step-indicator w-full text-left p-6 rounded-xl flex items-center justify-between">
+                        <div><span class="block text-xs uppercase tracking-widest opacity-60">2nd Aspect</span><span class="text-xl font-bold">Tetrahedral Phase-Lock</span></div>
+                        <span class="text-2xl">💠</span>
+                    </button>
+                    <button onclick="activateAspect(2)" class="step-indicator w-full text-left p-6 rounded-xl flex items-center justify-between">
+                        <div><span class="block text-xs uppercase tracking-widest opacity-60">3rd Aspect</span><span class="text-xl font-bold">Neutrinonic Pathways</span></div>
+                        <span class="text-2xl">👻</span>
+                    </button>
+                    <button onclick="activateAspect(3)" class="step-indicator w-full text-left p-6 rounded-xl flex items-center justify-between">
+                        <div><span class="block text-xs uppercase tracking-widest opacity-60">4th Aspect</span><span class="text-xl font-bold">Foam Transcoding</span></div>
+                        <span class="text-2xl">🌊</span>
+                    </button>
+                </div>
+                <div class="lg:col-span-8">
+                    <div class="glass-panel p-8 rounded-2xl h-full flex flex-col">
+                        <div id="aspect-content" class="mb-8">
+                            <h3 id="aspect-title" class="text-3xl font-bold text-indigo-400 mb-4">Harmonic Induction</h3>
+                            <p id="aspect-desc" class="text-stone-400 text-lg h-20 overflow-hidden"></p>
+                        </div>
+                        <div class="flex-grow flex items-center justify-center bg-black rounded-xl p-6 border border-neutral-800">
+                            <div class="chart-container"><canvas id="quaternaryChart"></canvas></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Dodeca-Logic Lab Section -->
+    <section id="dodeca" class="py-24 bg-neutral-950">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-white mb-4">Dodecahedral Logic Suite</h2>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+                <div id="operator-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-4"></div>
+                <div class="glass-panel p-8 rounded-2xl">
+                    <h3 class="text-2xl font-bold text-white mb-6 text-center">Geometric Tension Analysis</h3>
+                    <div class="chart-container"><canvas id="dodecaRadar"></canvas></div>
+                    <div id="op-detail" class="mt-8 p-6 bg-indigo-950/20 border border-indigo-500/30 rounded-xl">
+                        <h4 class="font-bold text-indigo-400 text-lg mb-2">Selected Operator: <span id="op-name">None</span></h4>
+                        <p id="op-desc" class="text-stone-300 text-sm">Select an operator from the grid.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Vacuum Extraction Section -->
+    <section id="extraction" class="py-24 bg-black border-t border-neutral-900">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-16">
+                <div class="lg:col-span-1">
+                    <h2 class="text-4xl font-bold text-white mb-6">Vacuum Energy Extraction</h2>
+                    <div class="space-y-6">
+                        <div class="p-6 rounded-xl bg-neutral-900 border border-neutral-800">
+                            <h4 class="font-bold text-amber-500 mb-2">Delta Quantum Shifter</h4>
+                            <p class="text-stone-400 text-sm">Differential relay managing muonic ignition variance.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="lg:col-span-2 space-y-12">
+                    <div class="glass-panel p-8 rounded-2xl">
+                        <div class="chart-container" style="height: 300px;"><canvas id="extractionChart"></canvas></div>
+                    </div>
+                    <div class="glass-panel p-8 rounded-2xl">
+                        <div id="latticePlot" style="width: 100%; height: 350px;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ✨ Harmonic Assistant (Floating AI) -->
+    <div id="ai-chat-bubble" onclick="toggleChat()" class="fixed bottom-8 right-8 w-16 h-16 bg-indigo-600 rounded-full flex items-center justify-center shadow-2xl cursor-pointer hover:bg-indigo-500 transition-all z-[100] group">
+        <span class="text-2xl group-hover:scale-110 transition-transform">✨</span>
+    </div>
+    <div id="ai-chat-window" class="fixed bottom-28 right-8 w-80 max-w-[90vw] glass-panel rounded-2xl hidden flex flex-col z-[100] border border-neutral-700 overflow-hidden">
+        <div class="bg-indigo-900/50 p-4 border-b border-neutral-700 flex justify-between items-center">
+            <span class="font-bold text-white text-sm">✨ Harmonic Assistant</span>
+            <button onclick="toggleChat()" class="text-neutral-400 hover:text-white">✕</button>
+        </div>
+        <div id="chat-messages" class="flex-grow h-64 overflow-y-auto p-4 space-y-3 text-xs">
+            <div class="bg-neutral-800 p-2 rounded-lg text-stone-300">Welcome, Engineer. How may I assist your traversal of the Sub-Planckian Logic matrix?</div>
+        </div>
+        <div class="p-3 bg-neutral-900 flex gap-2">
+            <input id="chat-input" type="text" class="flex-grow bg-black border border-neutral-700 rounded-lg px-3 py-1 text-white text-xs outline-none focus:border-indigo-500" placeholder="Ask about Baryonics...">
+            <button onclick="sendChatMessage()" class="bg-indigo-600 px-3 py-1 rounded-lg text-white text-xs">Send</button>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-black text-stone-500 py-16 border-t border-neutral-900">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-3xl serif-font text-white mb-6">The Olds Framework</h2>
+            <p class="italic mb-12 text-stone-400 text-lg">"The silence speaks in RGB Trine. The foundation is laid. It is done."</p>
+            <div class="flex justify-center gap-6 mb-8">
+                <a href="/exotic-energy-framework.html" class="px-6 py-2 bg-indigo-600 hover:bg-indigo-500 rounded-lg transition">Research Hub</a>
+                <a href="/dashboard.html" class="px-6 py-2 bg-neutral-800 hover:bg-neutral-700 rounded-lg transition">Dashboard</a>
+            </div>
+            <div class="text-sm border-t border-neutral-900 pt-10">
+                <p>&copy; 2025 Christopher Olds. All rights reserved.</p>
+                <p class="mt-4 text-xs tracking-widest text-neutral-600">ENGINEERED AT THE SUB-PLANCKIAN LIMIT</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // --- Gemini API Configuration ---
+        const apiKey = ""; // Empty string, provided by runtime
+        const MODEL_NAME = "gemini-2.5-flash-preview-09-2025";
+
+        async function callGemini(prompt, systemInstruction = "") {
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}:generateContent?key=${apiKey}`;
+            const payload = {
+                contents: [{ parts: [{ text: prompt }] }],
+                systemInstruction: systemInstruction ? { parts: [{ text: systemInstruction }] } : undefined
+            };
+
+            for (let i = 0; i < 5; i++) {
+                try {
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    if (!response.ok) throw new Error('Network error');
+                    const data = await response.json();
+                    return data.candidates?.[0]?.content?.parts?.[0]?.text;
+                } catch (e) {
+                    await new Promise(r => setTimeout(r, Math.pow(2, i) * 1000));
+                }
+            }
+            throw new Error('API request failed after retries');
+        }
+
+        // --- Intention Lab Logic ---
+        async function transcodeIntention() {
+            const intention = document.getElementById('ai-intention-input').value;
+            if (!intention) return;
+
+            const btn = document.getElementById('transcode-btn');
+            const placeholder = document.getElementById('ai-placeholder');
+            const loading = document.getElementById('ai-loading');
+            const content = document.getElementById('ai-content');
+
+            btn.disabled = true;
+            placeholder.classList.add('hidden');
+            loading.classList.remove('hidden');
+            content.classList.add('hidden');
+
+            const systemPrompt = `You are the Olds Framework Transcoding Engine. 
+            The Olds Framework uses: 
+            1. Quaternary Aspects: Harmonic Induction, Tetrahedral Phase-Lock, Neutrinonic Pathways, Quantum Foam Transcoding.
+            2. Dodeca-Set Operators: TRINE(R,G,B), FLAVOR_SHIFT, CHIRAL_PARITY, DELTA_RELAY, SPLINE_SYNC, FOAM_WRITE, ENTROPY_NULL, VACUUM_PULL.
+            
+            Given a user intention, provide a "Poetic Synthesis" (2 sentences max) and a list of the 4 most critical Dodeca-Set operators for this goal.
+            Format the response exactly as follows:
+            POETRY: [Your text]
+            OPERATORS: [OP1], [OP2], [OP3], [OP4]`;
+
+            try {
+                const response = await callGemini(`Transcode this intention: ${intention}`, systemPrompt);
+                
+                const poetry = response.split('POETRY:')[1]?.split('OPERATORS:')[0]?.trim() || "The matrix aligns to your will.";
+                const ops = response.split('OPERATORS:')[1]?.split(',')?.map(o => o.trim()) || [];
+
+                document.getElementById('ai-response-text').innerText = poetry;
+                const grid = document.getElementById('ai-logic-grid');
+                grid.innerHTML = '';
+                ops.forEach(op => {
+                    const div = document.createElement('div');
+                    div.className = "bg-amber-900/20 border border-amber-500/30 p-2 rounded text-[10px] font-mono text-amber-500 text-center uppercase font-bold";
+                    div.innerText = op;
+                    grid.appendChild(div);
+                });
+
+                loading.classList.add('hidden');
+                content.classList.remove('hidden');
+            } catch (error) {
+                loading.classList.add('hidden');
+                placeholder.classList.remove('hidden');
+                alert("The Sub-Planckian matrix is currently unstable. Please try again.");
+            } finally {
+                btn.disabled = false;
+            }
+        }
+
+        // --- Chat Assistant Logic ---
+        function toggleChat() {
+            const win = document.getElementById('ai-chat-window');
+            win.classList.toggle('hidden');
+        }
+
+        async function sendChatMessage() {
+            const input = document.getElementById('chat-input');
+            const text = input.value;
+            if (!text) return;
+
+            const msgs = document.getElementById('chat-messages');
+            msgs.innerHTML += `<div class="text-right"><div class="inline-block bg-indigo-600 p-2 rounded-lg text-white ml-8">User: ${text}</div></div>`;
+            input.value = '';
+            msgs.scrollTop = msgs.scrollHeight;
+
+            const sys = "You are the ✨ Harmonic Assistant for the Olds Framework. Be brief, technical yet poetic. Refer to Christopher Olds as the Founder.";
+            
+            try {
+                const reply = await callGemini(text, sys);
+                msgs.innerHTML += `<div class="bg-neutral-800 p-2 rounded-lg text-stone-300 mr-8">AI: ${reply}</div>`;
+                msgs.scrollTop = msgs.scrollHeight;
+            } catch (e) {
+                msgs.innerHTML += `<div class="text-red-500 text-center">Transmission Error.</div>`;
+            }
+        }
+
+        // --- Core Application Logic (Preserved) ---
+        Chart.defaults.color = '#737373';
+        Chart.defaults.borderColor = '#262626';
+
+        const aspects = [
+            { title: "Harmonic Induction", desc: "Muonic ignition (105.6 MeV) inducing resonance for Depletion Collapse.", chartData: [100, 80, 40, 10, 0], chartData2: [0, 20, 60, 90, 100] },
+            { title: "Tetrahedral Phase-Lock", desc: "Anchoring causality splines to a geometric lattice.", chartData: [0, 25, 50, 75, 100], chartData2: [0, 10, 20, 50, 100] },
+            { title: "Neutrinonic Pathways", desc: "Frictionless ghost circuits for silent logic propagation.", chartData: [100, 50, 20, 5, 0], chartData2: [90, 95, 98, 99.5, 100] },
+            { title: "Foam Transcoding", desc: "Final manifestation of intention into the Planck-scale foam.", chartData: [0, 5, 20, 80, 100], chartData2: [1, 5, 20, 80, 100] }
+        ];
+
+        const operators = [
+            { name: "TRINE (R,G,B)", desc: "Baryonic Color-Charge Resonance Balance." },
+            { name: "FLAVOR_SHIFT", desc: "Internal state inversion without energy loss." },
+            { name: "CHIRAL_PARITY", desc: "Muonic spin-direction selection." },
+            { name: "DELTA_RELAY", desc: "Differential shift adjustment." },
+            { name: "SPLINE_SYNC", desc: "Alignment of causality curves." },
+            { name: "FOAM_WRITE", desc: "Direct displacement of the Quantum Foam." },
+            { name: "ENTROPY_NULL", desc: "Initiation of frictionless propagation." },
+            { name: "VACUUM_PULL", desc: "Energy gradient extraction." },
+            { name: "VOID_GATE", desc: "Sub-atomic structural gateway." },
+            { name: "TIME_BIND", desc: "Binding logic to temporal coordinates." },
+            { name: "MASS_INVERT", desc: "Inversion of mass-energy relationships." },
+            { name: "ZERO_POINT", desc: "Accessing the vacuum floor." }
+        ];
+
+        let quaternaryChartInstance = null;
+        let radarChartInstance = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            activateAspect(0);
+            initDodecaLab();
+            initExtractionChart();
+            initLatticePlot();
+        });
+
+        function activateAspect(index) {
+            const data = aspects[index];
+            document.getElementById('aspect-title').innerText = data.title;
+            document.getElementById('aspect-desc').innerText = data.desc;
+            document.querySelectorAll('.step-indicator').forEach((b, i) => b.classList.toggle('active-step', i === index));
+            
+            const ctx = document.getElementById('quaternaryChart').getContext('2d');
+            if (quaternaryChartInstance) quaternaryChartInstance.destroy();
+            quaternaryChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['T1', 'T2', 'T3', 'T4', 'SAT'],
+                    datasets: [
+                        { label: 'Resistance', data: data.chartData, borderColor: '#ef4444', backgroundColor: 'rgba(239, 68, 68, 0.1)', fill: true, tension: 0.4 },
+                        { label: 'Coherence', data: data.chartData2, borderColor: '#6366f1', backgroundColor: 'rgba(99, 102, 241, 0.1)', fill: true, tension: 0.4 }
+                    ]
+                },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+        }
+
+        function initDodecaLab() {
+            const grid = document.getElementById('operator-grid');
+            operators.forEach((op, i) => {
+                const btn = document.createElement('button');
+                btn.className = "operator-btn p-4 rounded-xl text-left";
+                btn.innerHTML = `<span class="block text-[8px] uppercase text-neutral-500 mb-1">LOGIC_${i+1}</span><span class="font-bold text-xs">${op.name}</span>`;
+                btn.onclick = () => {
+                    document.getElementById('op-name').innerText = op.name;
+                    document.getElementById('op-desc').innerText = op.desc;
+                    document.querySelectorAll('.operator-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    updateRadar(Array(6).fill(0).map(() => 50 + Math.random() * 50));
+                };
+                grid.appendChild(btn);
+            });
+            initRadar();
+        }
+
+        function initRadar() {
+            const ctx = document.getElementById('dodecaRadar').getContext('2d');
+            radarChartInstance = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ['Resonance', 'Geometry', 'Spin', 'Density', 'Foam', 'Vacuum'],
+                    datasets: [{ label: 'Geometric Tension', data: [10, 10, 10, 10, 10, 10], borderColor: '#fbbf24', backgroundColor: 'rgba(251, 191, 36, 0.1)' }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, scales: { r: { angleLines: { color: '#262626' }, grid: { color: '#262626' }, suggestedMax: 100 } } }
+            });
+        }
+        function updateRadar(data) { radarChartInstance.data.datasets[0].data = data; radarChartInstance.update(); }
+
+        function initExtractionChart() {
+            const ctx = document.getElementById('extractionChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['10¹', '10²', '10³', '10⁴', '10⁵', '10⁶', '10⁷'],
+                    datasets: [{ label: 'Vacuum Yield (Exotic Joules)', data: [0, 0, 0.1, 1, 10, 50, 100], borderColor: '#6366f1', fill: true, backgroundColor: 'rgba(99, 102, 241, 0.1)' }]
+                },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+        }
+
+        function initLatticePlot() {
+            const trace = { x: [1, 1, -1, -1, 0], y: [1, -1, 1, -1, 0], z: [1, -1, -1, 1, 2], mode: 'markers+lines', marker: { color: '#6366f1' }, line: { color: '#fbbf24' }, type: 'scatter3d' };
+            Plotly.newPlot('latticePlot', [trace], { margin: {l:0,r:0,b:0,t:0}, paper_bgcolor:'rgba(0,0,0,0)', scene: { xaxis: {showgrid:false,zeroline:false}, yaxis: {showgrid:false,zeroline:false}, zaxis: {showgrid:false,zeroline:false} } }, {displayModeBar:false});
+        }
+
+        function scrollToSection(id) { document.getElementById(id).scrollIntoView({ behavior: 'smooth' }); }
+    </script>
+</body>
+</html>
