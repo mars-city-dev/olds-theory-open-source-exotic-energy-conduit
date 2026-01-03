@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EEF Lab - The Om Resonance Simulator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background: #050A30;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+        }
+        
+        canvas {
+            display: block;
+        }
+        
+        .status-locked {
+            animation: pulse-glow 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulse-glow {
+            0%, 100% {
+                box-shadow: 0 0 20px rgba(0, 209, 255, 0.4);
+            }
+            50% {
+                box-shadow: 0 0 40px rgba(0, 209, 255, 0.8);
+            }
+        }
+        
+        .range-slider {
+            appearance: none;
+            width: 100%;
+            height: 12px;
+            border-radius: 9999px;
+            background: rgba(255, 255, 255, 0.1);
+            outline: none;
+            -webkit-appearance: none;
+        }
+        
+        .range-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #00D1FF;
+            cursor: pointer;
+            box-shadow: 0 0 10px #00D1FF;
+        }
+        
+        .range-slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #00D1FF;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 0 10px #00D1FF;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-[#050A30] text-white p-6 md:p-12 font-sans selection:bg-cyan-500/30 overflow-hidden">
+    <div class="max-w-6xl mx-auto space-y-10">
+        
+        <!-- Header -->
+        <header class="flex flex-col md:flex-row justify-between items-end gap-6">
+            <div>
+                <div class="flex items-center gap-2 mb-2">
+                    <!-- Waves Icon SVG -->
+                    <svg class="text-cyan-400" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M2 12c.5-4 2-7 10-7s9.5 3 10 7M2 16c.5 4 2 7 10 7s9.5-3 10-7"></path>
+                    </svg>
+                    <span class="text-xs font-bold text-cyan-400 uppercase tracking-[0.4em]">The Om Protocol Simulator</span>
+                </div>
+                <h1 class="text-5xl font-black italic tracking-tighter uppercase">Primordial Sync</h1>
+                <p class="text-blue-200/60 mt-1">Tuning the Baryonic Mesh to the 10<sup>24</sup> Hz Vacuum Baseline</p>
+            </div>
+            <div class="bg-white/5 p-6 rounded-3xl border border-white/10 text-right min-w-[240px]">
+                <p class="text-[10px] uppercase font-bold text-blue-400 mb-1">Vacuum Coherence</p>
+                <p class="text-4xl font-mono text-cyan-400" id="coherenceDisplay">0.00%</p>
+            </div>
+        </header>
+
+        <!-- Visualization Canvas -->
+        <div class="relative bg-black/60 rounded-[3rem] border border-white/10 h-[500px] overflow-hidden flex items-center justify-center shadow-2xl">
+            <canvas id="mainCanvas" width="1000" height="500" class="w-full h-full opacity-90"></canvas>
+            
+            <div class="absolute top-6 left-6 flex flex-col gap-2">
+                <div class="flex items-center gap-2 bg-black/40 px-4 py-2 rounded-full border border-white/10">
+                    <!-- Activity Icon SVG -->
+                    <svg class="text-white/40" id="statusIcon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                    </svg>
+                    <span class="text-[10px] font-bold uppercase tracking-widest text-white/60" id="statusText">
+                        Scanning Potential
+                    </span>
+                </div>
+            </div>
+
+            <div id="tuneHint" class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                <p class="text-[10px] uppercase tracking-[0.5em] font-bold text-white/20 animate-pulse">
+                    Tune to 10^24 Hz to reveal the Web
+                </p>
+            </div>
+        </div>
+
+        <!-- Controls -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            <!-- Left Section: Frequency Control -->
+            <div class="lg:col-span-2 bg-white/5 rounded-[2.5rem] p-10 border border-white/10 space-y-8">
+                <div class="space-y-6">
+                    <div class="flex justify-between items-center">
+                        <label class="text-xs font-bold text-blue-300 uppercase tracking-widest">Resonance Frequency Selector</label>
+                        <span class="text-2xl font-mono text-cyan-400">10<sup id="tuningExp">10.00</sup> Hz</span>
+                    </div>
+                    <input 
+                        id="frequencySlider"
+                        type="range" 
+                        min="10" 
+                        max="24" 
+                        step="0.01"
+                        value="10"
+                        class="range-slider"
+                    />
+                </div>
+
+                <!-- Status Indicators -->
+                <div class="grid grid-cols-2 gap-6">
+                    <div id="humStatus" class="p-4 rounded-2xl border transition-all flex items-center gap-4 bg-white/5 border-white/10 opacity-40">
+                        <!-- Music Icon SVG -->
+                        <svg class="text-cyan-400" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 18V5l12-2v13"></path>
+                            <circle cx="6" cy="18" r="3"></circle>
+                            <circle cx="18" cy="16" r="3"></circle>
+                        </svg>
+                        <div>
+                            <p class="text-[10px] font-bold text-cyan-400 uppercase">The Hum</p>
+                            <p class="text-xs text-white">Universal Baseline Active</p>
+                        </div>
+                    </div>
+                    <div id="syncStatus" class="p-4 rounded-2xl border transition-all flex items-center gap-4 bg-white/5 border-white/10 opacity-40">
+                        <!-- Share2 Icon SVG -->
+                        <svg class="text-white" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="18" cy="5" r="3"></circle>
+                            <circle cx="6" cy="12" r="3"></circle>
+                            <circle cx="18" cy="19" r="3"></circle>
+                            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                            <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                        </svg>
+                        <div>
+                            <p class="text-[10px] font-bold text-white uppercase">Causal Sync</p>
+                            <p class="text-xs text-white">Atmospheric Loom Woven</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Section: Info & Status -->
+            <div class="flex flex-col gap-6">
+                <!-- Architect's Note -->
+                <div class="bg-white/5 p-8 rounded-[2rem] border border-white/10 flex-grow relative overflow-hidden">
+                    <div class="relative z-10">
+                        <div class="flex items-center gap-3 mb-4">
+                            <!-- Maximize2 Icon SVG -->
+                            <svg class="text-cyan-400" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
+                            </svg>
+                            <h4 class="text-[10px] font-bold text-cyan-400 uppercase tracking-widest">Architect's Note</h4>
+                        </div>
+                        <p class="text-sm text-blue-100 leading-relaxed italic opacity-70">
+                            "The Om is the realization that the instrument, the player, and the music have never been separate. We are tuning reality back to its source."
+                        </p>
+                    </div>
+                    <div class="absolute bottom-0 right-0 p-4 opacity-5">
+                        <!-- Orbit Icon SVG -->
+                        <svg viewBox="0 0 24 24" width="80" height="80" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="1"></circle>
+                            <path d="M20.3 13.43a9 9 0 0 1-18.6 0"></path>
+                            <path d="M3.7 13.43a9 9 0 0 1 16.6 0"></path>
+                        </svg>
+                    </div>
+                </div>
+                
+                <!-- Singularity Status -->
+                <div id="singularityStatus" class="p-8 rounded-[2rem] transition-all duration-700 bg-white/5 text-white opacity-40">
+                    <div class="flex items-center gap-3 mb-2 font-black italic">
+                        <!-- Star Icon SVG -->
+                        <svg class="text-white" viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                            <polygon points="12 2 15.09 10.26 24 10.26 17.55 15.7 19.64 24 12 18.54 4.36 24 6.45 15.7 0 10.26 8.91 10.26"></polygon>
+                        </svg>
+                        <span class="text-[10px] uppercase tracking-widest">Singularity Locked</span>
+                    </div>
+                    <p class="text-2xl font-black tracking-tighter">OM.STATE_ACTIVE</p>
+                </div>
+            </div>
+
+        </div>
+
+        <footer class="pt-10 text-center opacity-20 text-[10px] uppercase tracking-[0.5em] font-bold pb-20">
+            Data Legacy Vault | Christopher Olds | The Om Resonance
+        </footer>
+
+    </div>
+
+    <script>
+        // State management
+        let currentTuning = 10.00;
+        let isLocked = false;
+        let coherence = 0;
+
+        // Canvas setup
+        const canvas = document.getElementById('mainCanvas');
+        const ctx = canvas.getContext('2d');
+        let animationFrameId;
+        let time = 0;
+
+        // Generate background foam points
+        const points = Array.from({ length: 200 }, () => ({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            vx: (Math.random() - 0.5) * 0.5,
+            vy: (Math.random() - 0.5) * 0.5,
+            phase: Math.random() * Math.PI * 2
+        }));
+
+        // Rendering function
+        function render() {
+            // Background fade for trail effect
+            ctx.fillStyle = 'rgba(5, 10, 48, 0.2)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const isOm = currentTuning >= 23.9;
+
+            // Draw background potential (The Hum)
+            points.forEach((p, i) => {
+                p.x += p.vx * (isOm ? 0.2 : 1);
+                p.y += p.vy * (isOm ? 0.2 : 1);
+                
+                // Wrap around
+                if (p.x < 0) p.x = canvas.width;
+                if (p.x > canvas.width) p.x = 0;
+                if (p.y < 0) p.y = canvas.height;
+                if (p.y > canvas.height) p.y = 0;
+
+                const distToCenter = Math.sqrt((p.x - centerX)**2 + (p.y - centerY)**2);
+                
+                // Pull points into filament structures when tuning to Om
+                if (currentTuning > 18) {
+                    const pull = (currentTuning - 18) * 0.01;
+                    p.x += (centerX - p.x) * pull * 0.01;
+                    p.y += (centerY - p.y) * pull * 0.01;
+                }
+
+                ctx.fillStyle = isOm ? '#FFFFFF' : '#00D1FF';
+                ctx.globalAlpha = isOm ? 0.8 : 0.3;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, isOm ? 1.5 : 1, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Draw connections (The Loom/Web)
+                if (currentTuning > 15) {
+                    points.slice(i + 1, i + 5).forEach(p2 => {
+                        const d = Math.sqrt((p.x - p2.x)**2 + (p.y - p2.y)**2);
+                        if (d < (currentTuning * 5)) {
+                            ctx.strokeStyle = isOm ? 'rgba(255, 255, 255, 0.15)' : 'rgba(0, 209, 255, 0.05)';
+                            ctx.beginPath();
+                            ctx.moveTo(p.x, p.y);
+                            ctx.lineTo(p2.x, p2.y);
+                            ctx.stroke();
+                        }
+                    });
+                }
+            });
+
+            // Draw the Central Om Oscillation
+            if (isOm) {
+                ctx.shadowBlur = 40;
+                ctx.shadowColor = '#00D1FF';
+                ctx.strokeStyle = '#FFFFFF';
+                ctx.lineWidth = 2;
+                
+                // Geometric Singularity (The Circle of Oneness)
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, 100 + Math.sin(time * 2) * 5, 0, Math.PI * 2);
+                ctx.stroke();
+                
+                // Radiant Filaments
+                for (let a = 0; a < 12; a++) {
+                    const angle = (a * Math.PI * 2) / 12 + time * 0.2;
+                    ctx.beginPath();
+                    ctx.moveTo(centerX + Math.cos(angle) * 105, centerY + Math.sin(angle) * 105);
+                    ctx.lineTo(centerX + Math.cos(angle) * 300, centerY + Math.sin(angle) * 300);
+                    ctx.stroke();
+                }
+                ctx.shadowBlur = 0;
+            }
+
+            ctx.globalAlpha = 1.0;
+            time += 0.05;
+            animationFrameId = window.requestAnimationFrame(render);
+        }
+
+        // Update UI based on tuning value
+        function updateUI() {
+            if (currentTuning >= 23.9) {
+                isLocked = true;
+                coherence = 99.99;
+            } else {
+                isLocked = false;
+                coherence = (currentTuning / 24) * 100;
+            }
+
+            // Update displays
+            document.getElementById('coherenceDisplay').textContent = coherence.toFixed(2) + '%';
+            document.getElementById('tuningExp').textContent = currentTuning.toFixed(2);
+
+            // Update status icon color
+            const statusIcon = document.getElementById('statusIcon');
+            if (isLocked) {
+                statusIcon.classList.add('status-locked');
+                statusIcon.style.color = '#00D1FF';
+            } else {
+                statusIcon.classList.remove('status-locked');
+                statusIcon.style.color = 'rgba(255, 255, 255, 0.4)';
+            }
+
+            // Update status text
+            document.getElementById('statusText').textContent = isLocked ? 'Baseline Locked' : 'Scanning Potential';
+
+            // Update hint visibility
+            const tuneHint = document.getElementById('tuneHint');
+            tuneHint.style.display = isLocked ? 'none' : 'flex';
+
+            // Update Hum status
+            const humStatus = document.getElementById('humStatus');
+            if (isLocked) {
+                humStatus.classList.remove('bg-white/5', 'border-white/10', 'opacity-40');
+                humStatus.classList.add('bg-cyan-500/10', 'border-cyan-400');
+            } else {
+                humStatus.classList.add('bg-white/5', 'border-white/10', 'opacity-40');
+                humStatus.classList.remove('bg-cyan-500/10', 'border-cyan-400');
+            }
+
+            // Update Sync status
+            const syncStatus = document.getElementById('syncStatus');
+            if (isLocked) {
+                syncStatus.classList.remove('bg-white/5', 'border-white/10', 'opacity-40');
+                syncStatus.classList.add('bg-white/10', 'border-white/40');
+            } else {
+                syncStatus.classList.add('bg-white/5', 'border-white/10', 'opacity-40');
+                syncStatus.classList.remove('bg-white/10', 'border-white/40');
+            }
+
+            // Update Singularity status
+            const singularityStatus = document.getElementById('singularityStatus');
+            if (isLocked) {
+                singularityStatus.classList.remove('bg-white/5', 'text-white', 'opacity-40');
+                singularityStatus.classList.add('bg-white', 'text-[#050A30]');
+            } else {
+                singularityStatus.classList.add('bg-white/5', 'text-white', 'opacity-40');
+                singularityStatus.classList.remove('bg-white', 'text-[#050A30]');
+            }
+        }
+
+        // Event listeners
+        document.getElementById('frequencySlider').addEventListener('input', (e) => {
+            currentTuning = parseFloat(e.target.value);
+            updateUI();
+        });
+
+        // Initialize
+        render();
+        updateUI();
+    </script>
+</body>
+</html>

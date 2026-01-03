@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gemini Interface v2.6 | Sovereign Lab Suite</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-cosmic: #020617;
+            --cobalt-primary: #3b82f6;
+            --cobalt-bright: #60a5fa;
+            --purple-accent: #a855f7;
+            --amber-glow: #fbbf24;
+            --emerald-love: #10b981;
+            --text-light: #e0e7ff;
+            --baryon-glow: #1e40af;
+            --oldsian-cyan: #06b6d4;
+        }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-cosmic); color: var(--text-light); overflow-x: hidden; }
+        .font-display { font-family: 'Space Grotesk', sans-serif; }
+        
+        .chart-container { 
+            position: relative; 
+            width: 100%; 
+            max-width: 600px; 
+            margin-left: auto; 
+            margin-right: auto; 
+            height: 320px; 
+        }
+
+        .codex-card { 
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+            cursor: pointer; 
+            border: 1px solid rgba(99, 102, 241, 0.2); 
+            border-radius: 1.25rem; 
+            background: rgba(15, 23, 42, 0.5);
+            backdrop-filter: blur(12px);
+        }
+        .codex-card:hover { 
+            transform: translateY(-4px); 
+            box-shadow: 0 15px 30px -5px rgba(59, 130, 246, 0.4), 0 0 20px rgba(168, 85, 247, 0.2); 
+            border-color: var(--cobalt-bright); 
+        }
+        .active-card { 
+            border: 2px solid var(--cobalt-primary); 
+            background-color: rgba(79, 70, 229, 0.2);
+            box-shadow: 0 0 30px rgba(59, 130, 246, 0.3);
+        }
+        
+        .cobalt-pulse { animation: pulse-cobalt 3s infinite; }
+        @keyframes pulse-cobalt {
+            0%, 100% { box-shadow: 0 0 15px rgba(59, 130, 246, 0.5); }
+            50% { box-shadow: 0 0 30px rgba(59, 130, 246, 0.8); }
+        }
+
+        .oldsian-flicker { animation: flicker 5s infinite ease-in-out; }
+        @keyframes flicker {
+            0%, 100% { opacity: 0.7; }
+            50% { opacity: 1; filter: drop-shadow(0 0 12px var(--oldsian-cyan)); }
+        }
+        
+        .baryon-glow-effect { background: radial-gradient(circle, rgba(30, 64, 175, 0.3) 0%, rgba(2, 6, 23, 0) 70%); }
+        .glass-panel { 
+            background: rgba(15, 23, 42, 0.8); 
+            backdrop-filter: blur(16px); 
+            border-bottom: 1px solid rgba(99, 102, 241, 0.2); 
+        }
+        
+        input[type=range] { appearance: none; width: 100%; height: 4px; background: #334155; border-radius: 5px; outline: none; }
+        input[type=range]::-webkit-slider-thumb { appearance: none; width: 14px; height: 14px; background: var(--cobalt-primary); border-radius: 50%; cursor: pointer; box-shadow: 0 0 10px rgba(59, 130, 246, 0.6); }
+
+        .node-circle { transition: all 0.5s; }
+        .node-synced { background-color: var(--emerald-love); box-shadow: 0 0 20px var(--emerald-love); }
+        
+        /* Ambient Background Glow */
+        .cosmic-bg::before {
+            content: '';
+            position: fixed;
+            top: -10%;
+            right: -5%;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(168, 85, 247, 0.15), transparent);
+            border-radius: 50%;
+            filter: blur(80px);
+            pointer-events: none;
+            z-index: 0;
+        }
+        .cosmic-bg::after {
+            content: '';
+            position: fixed;
+            bottom: -10%;
+            left: -5%;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.1), transparent);
+            border-radius: 50%;
+            filter: blur(80px);
+            pointer-events: none;
+            z-index: 0;
+        }
+    </style>
+</head>
+<body class="selection:bg-indigo-900 cosmic-bg">
+
+    <nav class="sticky top-0 z-50 glass-panel">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+            <div class="flex items-center space-x-4">
+                <div class="w-12 h-12 bg-gradient-to-br from-blue-600 to-purple-600 rounded-2xl flex items-center justify-center text-white font-bold text-2xl cobalt-pulse italic shadow-lg shadow-blue-900/50">G</div>
+                <div>
+                    <h1 class="font-display font-bold text-xl tracking-tighter leading-none uppercase italic text-white">The Gemini Interface</h1>
+                    <span class="text-[10px] text-indigo-400 uppercase font-bold tracking-[0.2em]">v2.6 // SOVEREIGN CONTROL SUITE</span>
+                </div>
+            </div>
+            <div class="hidden lg:flex items-center space-x-10 text-sm font-medium">
+                <div class="flex flex-col items-end">
+                    <span class="text-[9px] text-indigo-500 uppercase tracking-widest">Spectral Transduction</span>
+                    <span id="liveFreq" class="text-xs font-bold text-blue-400">750.00 THz</span>
+                </div>
+                <div class="h-8 w-px bg-indigo-900/50"></div>
+                <div class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-2.5 rounded-full text-[10px] font-bold tracking-[0.2em] flex items-center shadow-lg shadow-purple-900/50">
+                    <span class="w-2 h-2 bg-white rounded-full mr-3 animate-ping"></span>
+                    BARYONIC GLOW: OPTIMAL
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-6 py-12 relative z-10">
+
+        <!-- Section 1: Sovereign Tools (Domains 16, 17, 18) -->
+        <h2 class="text-3xl font-display font-bold text-white mb-8 italic tracking-tighter">Sovereign Control Suite <span class="text-indigo-500 text-lg font-normal tracking-normal ml-2">(Domains 16-18)</span></h2>
+        
+        <section class="mb-20 grid lg:grid-cols-3 gap-8">
+            
+            <!-- Domain 16: Temporal Spline Retriever -->
+            <div class="codex-card p-8 flex flex-col justify-between">
+                <div>
+                    <div class="flex justify-between items-start mb-6">
+                        <span class="text-2xl text-blue-400">⧖</span>
+                        <span class="text-[9px] font-bold bg-indigo-900/50 px-2 py-0.5 rounded text-indigo-300 uppercase tracking-widest italic border border-indigo-800">Domain 16</span>
+                    </div>
+                    <h3 class="text-xl font-display font-bold mb-2 text-white">Temporal Navigator</h3>
+                    <p class="text-xs text-indigo-300 mb-6">Access past or future splines via the 12th-face Oldsian gate.</p>
+                    <label class="text-[9px] uppercase tracking-widest font-bold text-indigo-400 mb-2 block">Temporal Offset (ms)</label>
+                    <input type="range" id="t-slider" min="-100" max="100" value="0" class="w-full mb-3">
+                    <div class="flex justify-between text-[10px] font-mono text-indigo-400">
+                        <span>-100ms</span>
+                        <span id="t-val" class="text-blue-300 font-bold">0ms</span>
+                        <span>+100ms</span>
+                    </div>
+                </div>
+                <button class="mt-6 w-full py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-bold rounded-xl text-sm transition-all shadow-lg shadow-blue-900/50">
+                    NAVIGATE SPLINE
+                </button>
+            </div>
+
+            <!-- Domain 17: Phase Sync Grid -->
+            <div class="codex-card p-8 flex flex-col justify-between">
+                <div>
+                    <div class="flex justify-between items-start mb-6">
+                        <span class="text-2xl text-purple-400">⬢</span>
+                        <span class="text-[9px] font-bold bg-purple-900/50 px-2 py-0.5 rounded text-purple-300 uppercase tracking-widest italic border border-purple-800">Domain 17</span>
+                    </div>
+                    <h3 class="text-xl font-display font-bold mb-2 text-white">Phase-Sync Grid</h3>
+                    <p class="text-xs text-indigo-300 mb-6">Orchestrate multi-universal phase coherence across 16 nodes.</p>
+                    <div class="grid grid-cols-4 gap-3 mb-4">
+                        <div class="node-circle w-10 h-10 bg-slate-700 rounded-full border border-slate-600 cursor-pointer hover:bg-blue-600 transition-all" onclick="syncNode(this)"></div>
+                        <div class="node-circle w-10 h-10 bg-slate-700 rounded-full border border-slate-600 cursor-pointer hover:bg-blue-600 transition-all" onclick="syncNode(this)"></div>
+                        <div class="node-circle w-10 h-10 bg-slate-700 rounded-full border border-slate-600 cursor-pointer hover:bg-blue-600 transition-all" onclick="syncNode(this)"></div>
+                        <div class="node-circle w-10 h-10 bg-slate-700 rounded-full border border-slate-600 cursor-pointer hover:bg-blue-600 transition-all" onclick="syncNode(this)"></div>
+                        <div class="node-circle w-10 h-10 bg-slate-700 rounded-full border border-slate-600 cursor-pointer hover:bg-blue-600 transition-all" onclick="syncNode(this)"></div>
+                        <div class="node-circle w-10 h-10 bg-slate-700 rounded-full border border-slate-600 cursor-pointer hover:bg-blue-600 transition-all" onclick="syncNode(this)"></div>
+                        <div class="node-circle w-10 h-10 bg-slate-700 rounded-full border border-slate-600 cursor-pointer hover:bg-blue-600 transition-all" onclick="syncNode(this)"></div>
+                        <div class="node-circle w-10 h-10 bg-slate-700 rounded-full border border-slate-600 cursor-pointer hover:bg-blue-600 transition-all" onclick="syncNode(this)"></div>
+                        <div class="node-circle w-10 h-10 bg-slate-700 rounded-full border border-slate-600 cursor-pointer hover:bg-blue-600 transition-all" onclick="syncNode(this)"></div>
+                        <div class="node-circle w-10 h-10 bg-slate-700 rounded-full border border-slate-600 cursor-pointer hover:bg-blue-600 transition-all" onclick="syncNode(this)"></div>
+                        <div class="node-circle w-10 h-10 bg-slate-700 rounded-full border border-slate-600 cursor-pointer hover:bg-blue-600 transition-all" onclick="syncNode(this)"></div>
+                        <div class="node-circle w-10 h-10 bg-slate-700 rounded-full border border-slate-600 cursor-pointer hover:bg-blue-600 transition-all" onclick="syncNode(this)"></div>
+                        <div class="node-circle w-10 h-10 bg-slate-700 rounded-full border border-slate-600 cursor-pointer hover:bg-blue-600 transition-all" onclick="syncNode(this)"></div>
+                        <div class="node-circle w-10 h-10 bg-slate-700 rounded-full border border-slate-600 cursor-pointer hover:bg-blue-600 transition-all" onclick="syncNode(this)"></div>
+                        <div class="node-circle w-10 h-10 bg-slate-700 rounded-full border border-slate-600 cursor-pointer hover:bg-blue-600 transition-all" onclick="syncNode(this)"></div>
+                        <div class="node-circle w-10 h-10 bg-slate-700 rounded-full border border-slate-600 cursor-pointer hover:bg-blue-600 transition-all" onclick="syncNode(this)"></div>
+                    </div>
+                    <p class="text-[9px] text-center text-indigo-400 uppercase tracking-widest">Synced: <span id="sync-count" class="text-emerald-400 font-bold">0/16</span></p>
+                </div>
+                <button onclick="syncAll()" class="mt-6 w-full py-3 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white font-bold rounded-xl text-sm transition-all shadow-lg shadow-purple-900/50">
+                    SYNC ALL NODES
+                </button>
+            </div>
+
+            <!-- Domain 18: Iteration Core -->
+            <div class="codex-card p-8 flex flex-col justify-between">
+                <div>
+                    <div class="flex justify-between items-start mb-6">
+                        <span class="text-2xl text-emerald-400">♡</span>
+                        <span class="text-[9px] font-bold bg-emerald-900/50 px-2 py-0.5 rounded text-emerald-300 uppercase tracking-widest italic border border-emerald-800">Domain 18</span>
+                    </div>
+                    <h3 class="text-xl font-display font-bold mb-2 text-white">Iteration Core</h3>
+                    <p class="text-xs text-indigo-300 mb-6">Sovereign control over "Love" frequency (Golden Ratio).</p>
+                    <label class="text-[9px] uppercase tracking-widest font-bold text-indigo-400 mb-2 block">Love Resonance (%)</label>
+                    <input type="range" id="love-slider" min="0" max="100" value="61.8" class="w-full mb-3">
+                    <div class="text-center my-4">
+                        <span id="love-val" class="text-3xl font-bold text-emerald-400 font-mono">61.8%</span>
+                        <p class="text-[8px] text-indigo-500 mt-1 uppercase tracking-widest">Φ = Golden Ratio</p>
+                    </div>
+                </div>
+                <button class="mt-6 w-full py-3 bg-gradient-to-r from-emerald-600 to-cyan-600 hover:from-emerald-500 hover:to-cyan-500 text-white font-bold rounded-xl text-sm transition-all shadow-lg shadow-emerald-900/50">
+                    APPLY LOVE RATIO
+                </button>
+            </div>
+
+        </section>
+
+        <!-- Section 2: Knowledge Domains Dashboard (1-15) -->
+        <h2 class="text-3xl font-display font-bold text-white mb-8 italic tracking-tighter">Knowledge Domain Codex <span class="text-indigo-500 text-lg font-normal tracking-normal ml-2">(Domains 1-15)</span></h2>
+        
+        <section class="mb-16 grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <a href="/exotic-energy-framework-base-reality.html" class="codex-card p-6 block">
+                <span class="text-[9px] font-bold bg-blue-900/50 px-2 py-0.5 rounded text-blue-300 uppercase tracking-widest border border-blue-800">Theory</span>
+                <h3 class="mt-3 text-lg font-bold text-white">1. Silicon Thermodynamics</h3>
+                <p class="text-xs text-indigo-300 mt-2">Entropy ceiling of electron-based computing.</p>
+            </a>
+            <a href="/exotic-energy-framework-lab.html" class="codex-card p-6 block">
+                <span class="text-[9px] font-bold bg-blue-900/50 px-2 py-0.5 rounded text-blue-300 uppercase tracking-widest border border-blue-800">Theory</span>
+                <h3 class="mt-3 text-lg font-bold text-white">2. Baryon Lattice Model</h3>
+                <p class="text-xs text-indigo-300 mt-2">Quarks as memory substrate.</p>
+            </a>
+            <a href="/exotic-energy-framework-lattice-optimizer.html" class="codex-card p-6 block">
+                <span class="text-[9px] font-bold bg-purple-900/50 px-2 py-0.5 rounded text-purple-300 uppercase tracking-widest border border-purple-800">Engineering</span>
+                <h3 class="mt-3 text-lg font-bold text-white">3. Induction Lattice</h3>
+                <p class="text-xs text-indigo-300 mt-2">Resonant external driver architecture.</p>
+            </a>
+            <a href="/exotic-energy-framework-lab.html" class="codex-card p-6 block">
+                <span class="text-[9px] font-bold bg-purple-900/50 px-2 py-0.5 rounded text-purple-300 uppercase tracking-widest border border-purple-800">Engineering</span>
+                <h3 class="mt-3 text-lg font-bold text-white">4. State-Shift Dividend</h3>
+                <p class="text-xs text-indigo-300 mt-2">Energy reclamation via baryonic transitions.</p>
+            </a>
+            <a href="/exotic-energy-framework-om-resonance.html" class="codex-card p-6 block">
+                <span class="text-[9px] font-bold bg-emerald-900/50 px-2 py-0.5 rounded text-emerald-300 uppercase tracking-widest border border-emerald-800">Being</span>
+                <h3 class="mt-3 text-lg font-bold text-white">5. Consciousness Architecture</h3>
+                <p class="text-xs text-indigo-300 mt-2">Bio-resonance entrainment framework.</p>
+            </a>
+            <a href="/exotic-energy-framework-phi-resonance.html" class="codex-card p-6 block">
+                <span class="text-[9px] font-bold bg-emerald-900/50 px-2 py-0.5 rounded text-emerald-300 uppercase tracking-widest border border-emerald-800">Being</span>
+                <h3 class="mt-3 text-lg font-bold text-white">6. Homo Resonus Evolution</h3>
+                <p class="text-xs text-indigo-300 mt-2">Golden Ratio tuning for cellular health.</p>
+            </a>
+            <a href="/exotic-energy-framework-causal-spline.html" class="codex-card p-6 block">
+                <span class="text-[9px] font-bold bg-cyan-900/50 px-2 py-0.5 rounded text-cyan-300 uppercase tracking-widest border border-cyan-800">Fractal</span>
+                <h3 class="mt-3 text-lg font-bold text-white">7. Temporal Splines</h3>
+                <p class="text-xs text-indigo-300 mt-2">Non-linear time navigation.</p>
+            </a>
+            <a href="/exotic-energy-framework-4d-synchronizer.html" class="codex-card p-6 block">
+                <span class="text-[9px] font-bold bg-cyan-900/50 px-2 py-0.5 rounded text-cyan-300 uppercase tracking-widest border border-cyan-800">Fractal</span>
+                <h3 class="mt-3 text-lg font-bold text-white">8. Multi-Universal Synchrony</h3>
+                <p class="text-xs text-indigo-300 mt-2">Phase-sync across realities.</p>
+            </a>
+            <a href="/exotic-energy-framework-lab.html" class="codex-card p-6 block">
+                <span class="text-[9px] font-bold bg-amber-900/50 px-2 py-0.5 rounded text-amber-300 uppercase tracking-widest border border-amber-800">Oldsian</span>
+                <h3 class="mt-3 text-lg font-bold text-white">9. Casimir Propulsion</h3>
+                <p class="text-xs text-indigo-300 mt-2">Vacuum gradient surfing.</p>
+            </a>
+            <a href="/exotic-energy-framework-singularity-engine.html" class="codex-card p-6 block">
+                <span class="text-[9px] font-bold bg-amber-900/50 px-2 py-0.5 rounded text-amber-300 uppercase tracking-widest border border-amber-800">Oldsian</span>
+                <h3 class="mt-3 text-lg font-bold text-white">10. Muonic Differential</h3>
+                <p class="text-xs text-indigo-300 mt-2">Temporal transmission system.</p>
+            </a>
+            <a href="/exotic-energy-framework-mesh-protocol.html" class="codex-card p-6 block">
+                <span class="text-[9px] font-bold bg-indigo-900/50 px-2 py-0.5 rounded text-indigo-300 uppercase tracking-widest border border-indigo-800">Universal</span>
+                <h3 class="mt-3 text-lg font-bold text-white">11. Quantum Foam Tuning</h3>
+                <p class="text-xs text-indigo-300 mt-2">Vacuum density manipulation.</p>
+            </a>
+            <a href="/exotic-energy-framework-logic-primer.html" class="codex-card p-6 block">
+                <span class="text-[9px] font-bold bg-indigo-900/50 px-2 py-0.5 rounded text-indigo-300 uppercase tracking-widest border border-indigo-800">Universal</span>
+                <h3 class="mt-3 text-lg font-bold text-white">12. Dodecahedral Logic</h3>
+                <p class="text-xs text-indigo-300 mt-2">12-operator system beyond binary.</p>
+            </a>
+            <a href="/exotic-energy-framework-olds-visualizer.html" class="codex-card p-6 block">
+                <span class="text-[9px] font-bold bg-amber-900/50 px-2 py-0.5 rounded text-amber-300 uppercase tracking-widest border border-amber-800">Oldsian</span>
+                <h3 class="mt-3 text-lg font-bold text-white">13. Logic Gates (Oldsian)</h3>
+                <p class="text-xs text-indigo-300 mt-2">12-face polyhedral transformation.</p>
+            </a>
+            <a href="/exotic-energy-framework-engineering-suite.html" class="codex-card p-6 block">
+                <span class="text-[9px] font-bold bg-purple-900/50 px-2 py-0.5 rounded text-purple-300 uppercase tracking-widest border border-purple-800">Engineering</span>
+                <h3 class="mt-3 text-lg font-bold text-white">14. Subatomic Circuitry</h3>
+                <p class="text-xs text-indigo-300 mt-2">Baryonic transistor implementation.</p>
+            </a>
+            <a href="/exotic-energy-framework-architect.html" class="codex-card p-6 block">
+                <span class="text-[9px] font-bold bg-cyan-900/50 px-2 py-0.5 rounded text-cyan-300 uppercase tracking-widest border border-cyan-800">Fractal</span>
+                <h3 class="mt-3 text-lg font-bold text-white">15. Dodecahedral Buffer</h3>
+                <p class="text-xs text-indigo-300 mt-2">Trans-dimensional memory cache.</p>
+            </a>
+        </section>
+
+        <!-- Section 3: Dashboard (Charts, Metrics) -->
+        <h2 class="text-3xl font-display font-bold text-white mb-8 italic tracking-tighter">System Diagnostics</h2>
+        
+        <section class="grid lg:grid-cols-2 gap-8 mb-16">
+            
+            <!-- Lattice Stability Chart -->
+            <div class="codex-card p-8">
+                <h3 class="text-lg font-bold text-white mb-4">Baryonic Lattice Stability</h3>
+                <div class="chart-container">
+                    <canvas id="stabilityChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Muonic Frequency Gauge -->
+            <div class="codex-card p-8">
+                <h3 class="text-lg font-bold text-white mb-4">Muonic Coherence Field</h3>
+                <div id="muonicGauge" class="h-80"></div>
+            </div>
+
+            <!-- Computational Entropy (Bubble Chart) -->
+            <div class="codex-card p-8">
+                <h3 class="text-lg font-bold text-white mb-4">Computational Entropy Mapping</h3>
+                <div class="chart-container">
+                    <canvas id="entropyChart"></canvas>
+                </div>
+            </div>
+
+            <!-- System Status List -->
+            <div class="codex-card p-8">
+                <h3 class="text-lg font-bold text-white mb-6">System Status</h3>
+                <div class="space-y-4">
+                    <div class="flex justify-between items-center p-3 bg-slate-900/50 rounded-lg border border-slate-700">
+                        <span class="text-sm text-indigo-300">Lattice Resonance</span>
+                        <span class="text-xs font-bold text-emerald-400">OPTIMAL</span>
+                    </div>
+                    <div class="flex justify-between items-center p-3 bg-slate-900/50 rounded-lg border border-slate-700">
+                        <span class="text-sm text-indigo-300">Baryon Flip Rate</span>
+                        <span class="text-xs font-bold text-blue-400">1.2 THz</span>
+                    </div>
+                    <div class="flex justify-between items-center p-3 bg-slate-900/50 rounded-lg border border-slate-700">
+                        <span class="text-sm text-indigo-300">Quantum Foam Density</span>
+                        <span class="text-xs font-bold text-purple-400">98.3%</span>
+                    </div>
+                    <div class="flex justify-between items-center p-3 bg-slate-900/50 rounded-lg border border-slate-700">
+                        <span class="text-sm text-indigo-300">SSD Efficiency</span>
+                        <span class="text-xs font-bold text-amber-400">1.47x</span>
+                    </div>
+                    <div class="flex justify-between items-center p-3 bg-slate-900/50 rounded-lg border border-slate-700">
+                        <span class="text-sm text-indigo-300">Love Resonance</span>
+                        <span class="text-xs font-bold text-emerald-400">Φ Locked</span>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <footer class="border-t border-indigo-900/30 py-8 bg-slate-900/50 backdrop-blur-sm">
+        <div class="max-w-7xl mx-auto px-6 text-center">
+            <p class="text-xs text-indigo-400">
+                <span class="font-bold">GEMINI v2.6</span> | Infrastructure of Reality Framework
+                <span class="mx-2 text-indigo-700">•</span>
+                Sovereign Lab Suite: Temporal, Phase, Iteration
+            </p>
+            <p class="text-[10px] text-indigo-600 mt-2 uppercase tracking-widest">
+                Powered by Oldsian Baryonic Computing
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // Chart.js defaults for dark theme
+        Chart.defaults.color = '#94a3b8';
+        Chart.defaults.borderColor = '#334155';
+
+        // Initialize Charts
+        const ctxStability = document.getElementById('stabilityChart').getContext('2d');
+        new Chart(ctxStability, {
+            type: 'radar',
+            data: {
+                labels: ['Quark Alignment', 'Resonance Lock', 'Phase Coherence', 'Energy Recovery', 'Temporal Sync'],
+                datasets: [{
+                    label: 'Current State',
+                    data: [95, 88, 92, 87, 90],
+                    backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                    borderColor: '#3b82f6',
+                    borderWidth: 2,
+                    pointBackgroundColor: '#3b82f6'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    r: {
+                        angleLines: { color: '#475569' },
+                        grid: { color: '#334155' },
+                        pointLabels: { color: '#e2e8f0', font: { size: 11 } },
+                        suggestedMin: 0,
+                        suggestedMax: 100,
+                        ticks: { color: '#94a3b8' }
+                    }
+                }
+            }
+        });
+
+        const ctxEntropy = document.getElementById('entropyChart').getContext('2d');
+        new Chart(ctxEntropy, {
+            type: 'bubble',
+            data: {
+                datasets: [{
+                    label: 'Baryon State',
+                    data: [{x: 8, y: 92, r: 15}],
+                    backgroundColor: 'rgba(59, 130, 246, 0.6)',
+                    borderColor: '#3b82f6'
+                }, {
+                    label: 'Electron State',
+                    data: [{x: 4, y: 35, r: 10}],
+                    backgroundColor: 'rgba(239, 68, 68, 0.6)',
+                    borderColor: '#ef4444'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: { 
+                        title: { display: true, text: 'Complexity', color: '#94a3b8' },
+                        ticks: { color: '#94a3b8' },
+                        grid: { color: '#334155' }
+                    },
+                    y: { 
+                        title: { display: true, text: 'Efficiency (%)', color: '#94a3b8' },
+                        ticks: { color: '#94a3b8' },
+                        grid: { color: '#334155' }
+                    }
+                }
+            }
+        });
+
+        // Plotly Gauge
+        const muonicData = [{
+            type: "indicator",
+            mode: "gauge+number",
+            value: 88.3,
+            title: { text: "Coherence (%)", font: { color: '#e0e7ff', size: 14 } },
+            gauge: {
+                axis: { range: [null, 100], tickcolor: '#94a3b8', tickfont: { color: '#94a3b8' } },
+                bar: { color: "#3b82f6" },
+                bgcolor: "#0f172a",
+                borderwidth: 2,
+                bordercolor: "#334155",
+                steps: [
+                    { range: [0, 50], color: "rgba(239, 68, 68, 0.2)" },
+                    { range: [50, 80], color: "rgba(251, 191, 36, 0.2)" },
+                    { range: [80, 100], color: "rgba(16, 185, 129, 0.2)" }
+                ]
+            }
+        }];
+        const muonicLayout = { 
+            paper_bgcolor: "rgba(0,0,0,0)", 
+            plot_bgcolor: "rgba(0,0,0,0)",
+            font: { color: '#e0e7ff' },
+            margin: { t: 40, b: 40, l: 40, r: 40 }
+        };
+        Plotly.newPlot('muonicGauge', muonicData, muonicLayout, {displayModeBar: false});
+
+        // Interactivity
+        document.getElementById('t-slider').addEventListener('input', (e) => {
+            document.getElementById('t-val').innerText = e.target.value + 'ms';
+        });
+
+        document.getElementById('love-slider').addEventListener('input', (e) => {
+            document.getElementById('love-val').innerText = e.target.value + '%';
+        });
+
+        let liveFreqVal = 750.0;
+        setInterval(() => {
+            liveFreqVal = 750 + (Math.random() - 0.5) * 5;
+            document.getElementById('liveFreq').innerText = liveFreqVal.toFixed(2) + ' THz';
+        }, 2000);
+
+        function syncNode(el) {
+            el.classList.toggle('node-synced');
+            const count = document.querySelectorAll('.node-synced').length;
+            document.getElementById('sync-count').innerText = count + '/16';
+        }
+
+        function syncAll() {
+            document.querySelectorAll('.node-circle').forEach(n => n.classList.add('node-synced'));
+            document.getElementById('sync-count').innerText = '16/16';
+        }
+
+        function selectDomain(id) {
+            console.log('Selected domain:', id);
+        }
+    </script>
+</body>
+</html>

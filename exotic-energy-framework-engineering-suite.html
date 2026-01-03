@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EEF Engineering Suite - Quaternary Logic Gate</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background: #050A30;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+        }
+        
+        .glow-cyan {
+            box-shadow: 0 0 30px rgba(0, 209, 255, 0.4);
+        }
+        
+        .glow-slate {
+            box-shadow: 0 0 30px rgba(148, 163, 184, 0.4);
+        }
+        
+        .glow-purple {
+            box-shadow: 0 0 30px rgba(168, 85, 247, 0.4);
+        }
+        
+        .glow-rose {
+            box-shadow: 0 0 30px rgba(244, 63, 94, 0.4);
+        }
+        
+        .particle-box {
+            transition: all 0.5s ease;
+            border-width: 4px;
+        }
+        
+        .compass-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+        
+        .compass-dot.active-cyan {
+            background-color: #00D1FF;
+            box-shadow: 0 0 10px #00D1FF;
+        }
+        
+        .compass-dot.active-slate {
+            background-color: #94A3B8;
+            box-shadow: 0 0 10px #94A3B8;
+        }
+        
+        .compass-dot.active-purple {
+            background-color: #A855F7;
+            box-shadow: 0 0 10px #A855F7;
+        }
+        
+        .compass-dot.active-rose {
+            background-color: #F43F5E;
+            box-shadow: 0 0 10px #F43F5E;
+        }
+        
+        .compass-dot.inactive {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .rotate-button {
+            transition: all 0.3s ease;
+        }
+        
+        .rotate-button:hover {
+            transform: scale(1.02);
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-[#050A30] text-slate-100 font-sans p-6 md:p-12">
+    <div class="max-w-6xl mx-auto space-y-8">
+        
+        <!-- Header -->
+        <header class="flex flex-col md:flex-row justify-between items-center gap-6">
+            <div>
+                <div class="flex items-center gap-2 mb-2">
+                    <!-- Grid Icon SVG -->
+                    <svg class="text-cyan-400" size="20" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="14" width="7" height="7"></rect>
+                        <rect x="3" y="14" width="7" height="7"></rect>
+                    </svg>
+                    <span class="text-xs font-bold text-cyan-400 uppercase tracking-[0.3em]">Module: Logic Architecture</span>
+                </div>
+                <h1 class="text-4xl font-black text-white italic tracking-tighter uppercase">EEF Engineering Suite</h1>
+                <p class="text-blue-200/60 mt-1">Simulating High-Density Baryonic Computation</p>
+            </div>
+            <div class="flex gap-2">
+                <button 
+                    id="quaternaryTab"
+                    class="px-4 py-2 rounded-lg text-xs font-bold transition-all bg-cyan-500 text-black active-tab"
+                >Quaternary Gate</button>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <div class="bg-white/5 backdrop-blur-xl rounded-[2.5rem] border border-white/10 p-8 md:p-12 shadow-2xl">
+            <div id="quaternaryGate" class="space-y-8">
+                
+                <!-- Title Section -->
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h2 class="text-2xl font-bold text-white">Quaternary Logic Gate</h2>
+                        <p class="text-sm opacity-60">Base-4 Baryonic State Rotation</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-[10px] uppercase font-bold text-blue-400">Current Logic</p>
+                        <p class="text-4xl font-mono text-white" id="stateDisplay">00</p>
+                    </div>
+                </div>
+
+                <!-- Main Grid: Visualizer + Controls -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                    
+                    <!-- Visualizer: The Compass -->
+                    <div class="relative h-64 bg-black/40 rounded-3xl border border-white/10 flex items-center justify-center">
+                        
+                        <!-- Compass Ring -->
+                        <div class="absolute w-48 h-48 border border-white/5 rounded-full flex items-center justify-center">
+                            <!-- Top (00 - Proton) -->
+                            <div class="compass-dot inactive" id="dot-00" style="position: absolute; top: 8px; left: 50%; transform: translateX(-50%);"></div>
+                            
+                            <!-- Right (01 - Neutron) -->
+                            <div class="compass-dot inactive" id="dot-01" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%);"></div>
+                            
+                            <!-- Bottom (11 - Sigma) -->
+                            <div class="compass-dot inactive" id="dot-11" style="position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%);"></div>
+                            
+                            <!-- Left (10 - Lambda) -->
+                            <div class="compass-dot inactive" id="dot-10" style="position: absolute; left: 8px; top: 50%; transform: translateY(-50%);"></div>
+                        </div>
+
+                        <!-- Central Particle -->
+                        <div class="relative z-10 flex flex-col items-center gap-2 transition-all duration-500">
+                            <div 
+                                id="particleBox"
+                                class="particle-box w-24 h-24 rounded-full flex items-center justify-center border-4 transition-colors duration-500"
+                                style="border-color: #00D1FF; background-color: rgba(0, 209, 255, 0.125);"
+                            >
+                                <span class="text-xl font-black text-white" id="quarksDisplay">uud</span>
+                            </div>
+                            <span class="text-xs uppercase font-bold tracking-widest text-white/60" id="particleLabel">Proton</span>
+                        </div>
+                    </div>
+
+                    <!-- Controls & Data -->
+                    <div class="space-y-6">
+                        <div class="grid grid-cols-2 gap-4">
+                            <!-- Charge Display -->
+                            <div class="bg-white/5 p-4 rounded-xl border border-white/10">
+                                <p class="text-[10px] uppercase font-bold text-blue-300">Charge (Q)</p>
+                                <p class="text-xl font-mono" id="chargeDisplay">+1</p>
+                            </div>
+                            
+                            <!-- Strangeness Display -->
+                            <div class="bg-white/5 p-4 rounded-xl border border-white/10">
+                                <p class="text-[10px] uppercase font-bold text-blue-300">Strangeness (S)</p>
+                                <p class="text-xl font-mono" id="strangenessDisplay">0</p>
+                            </div>
+                        </div>
+
+                        <!-- Rotate Button -->
+                        <button 
+                            id="rotateBtn"
+                            class="rotate-button w-full py-6 rounded-2xl bg-cyan-500 hover:bg-white text-[#050A30] font-black text-lg transition-all flex items-center justify-center gap-3"
+                        >
+                            <!-- Refresh Icon SVG -->
+                            <svg class="rotate-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M23 4v6h-6"></path>
+                                <path d="M1 20v-6h6"></path>
+                                <path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"></path>
+                            </svg>
+                            ROTATE FLAVOR STATE
+                        </button>
+
+                        <p class="text-center text-[10px] uppercase tracking-widest text-white/40">
+                            Inducing Weak Interaction via Harmonic Lattice
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="pt-12 text-center opacity-20 text-[10px] uppercase tracking-[0.4em] font-bold">
+            Architect: Christopher Olds | Data Legacy Vault
+        </footer>
+
+    </div>
+
+    <script>
+        // State Map - Quaternary Logic Gate States
+        const stateMap = {
+            '00': { label: 'Proton', quarks: 'uud', color: '#00D1FF', charge: '+1', strange: '0' },
+            '01': { label: 'Neutron', quarks: 'udd', color: '#94A3B8', charge: '0', strange: '0' },
+            '10': { label: 'Lambda', quarks: 'uds', color: '#A855F7', charge: '0', strange: '-1' },
+            '11': { label: 'Sigma', quarks: 'uus', color: '#F43F5E', charge: '+1', strange: '-1' }
+        };
+
+        // State tracking
+        let currentState = '00';
+        const stateOrder = ['00', '01', '10', '11'];
+
+        // DOM Elements
+        const rotateBtn = document.getElementById('rotateBtn');
+        const stateDisplay = document.getElementById('stateDisplay');
+        const particleBox = document.getElementById('particleBox');
+        const quarksDisplay = document.getElementById('quarksDisplay');
+        const particleLabel = document.getElementById('particleLabel');
+        const chargeDisplay = document.getElementById('chargeDisplay');
+        const strangenessDisplay = document.getElementById('strangenessDisplay');
+
+        // Update UI with current state
+        function updateUI() {
+            const state = stateMap[currentState];
+            
+            // Update displays
+            stateDisplay.textContent = currentState;
+            quarksDisplay.textContent = state.quarks;
+            particleLabel.textContent = state.label;
+            chargeDisplay.textContent = state.charge;
+            strangenessDisplay.textContent = state.strange;
+            
+            // Update particle box styling
+            particleBox.style.borderColor = state.color;
+            particleBox.style.backgroundColor = state.color + '20';
+            particleBox.style.boxShadow = `0 0 30px ${state.color}40`;
+            
+            // Update compass dots
+            updateCompassDots();
+        }
+
+        // Update compass dot highlights
+        function updateCompassDots() {
+            // Clear all dots
+            document.getElementById('dot-00').className = 'compass-dot inactive';
+            document.getElementById('dot-01').className = 'compass-dot inactive';
+            document.getElementById('dot-10').className = 'compass-dot inactive';
+            document.getElementById('dot-11').className = 'compass-dot inactive';
+            
+            // Highlight current state dot
+            const dotElement = document.getElementById(`dot-${currentState}`);
+            const state = stateMap[currentState];
+            
+            if (currentState === '00') {
+                dotElement.className = 'compass-dot active-cyan';
+            } else if (currentState === '01') {
+                dotElement.className = 'compass-dot active-slate';
+            } else if (currentState === '10') {
+                dotElement.className = 'compass-dot active-purple';
+            } else if (currentState === '11') {
+                dotElement.className = 'compass-dot active-rose';
+            }
+        }
+
+        // Rotate state function
+        function rotateState() {
+            const currentIndex = stateOrder.indexOf(currentState);
+            currentState = stateOrder[(currentIndex + 1) % 4];
+            updateUI();
+        }
+
+        // Event Listeners
+        rotateBtn.addEventListener('click', rotateState);
+
+        // Initialize UI on page load
+        window.addEventListener('load', updateUI);
+    </script>
+</body>
+</html>

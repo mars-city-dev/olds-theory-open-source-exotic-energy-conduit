@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>THE INFRASTRUCTURE OF REALITY | Cosmic Hub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-cosmic: #020617; /* Slate 950 / Deepest Cobalt */
+            --sidebar-bg: #0f172a; /* Slate 900 */
+            --cobalt-core: #1e3a8a; /* Blue 900 */
+            --violet-ignition: #8b5cf6; /* Violet 500 */
+            --neon-blue: #3b82f6; /* Blue 500 */
+            --text-silver: #cbd5e1; /* Slate 300 */
+            --text-bright: #f8fafc; /* Slate 50 */
+            --sidebar-width: 280px;
+        }
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: var(--bg-cosmic); 
+            color: var(--text-silver); 
+            overflow: hidden; 
+        }
+        .font-display { font-family: 'Space Grotesk', sans-serif; }
+        
+        /* Initial Attenuation Overlay */
+        #attenuationOverlay {
+            transition: opacity 1.2s cubic-bezier(0.4, 0, 0.2, 1), visibility 1.2s;
+        }
+        .fade-out { opacity: 0; visibility: hidden; }
+        .cosmic-pulse { animation: pulse 5s infinite ease-in-out; }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.8; box-shadow: 0 0 30px rgba(59, 130, 246, 0.2); }
+            50% { transform: scale(1.05); opacity: 1; box-shadow: 0 0 60px rgba(139, 92, 246, 0.4); }
+        }
+
+        /* Sidebar & Layout */
+        .sidebar { 
+            width: var(--sidebar-width); 
+            height: 100vh; 
+            position: fixed; 
+            left: 0; 
+            top: 0; 
+            z-index: 40; 
+            border-right: 1px solid rgba(51, 65, 85, 0.5); 
+            background: var(--sidebar-bg); 
+        }
+        .main-content { 
+            margin-left: var(--sidebar-width); 
+            height: 100vh; 
+            overflow-y: auto; 
+            scroll-behavior: smooth;
+            background: radial-gradient(circle at 50% 50%, #0f172a 0%, #020617 100%);
+        }
+        
+        /* Dashboard Cards & Elements */
+        .nav-link { transition: all 0.2s; border-radius: 0.75rem; color: #94a3b8; }
+        .nav-link:hover { background: rgba(255, 255, 255, 0.05); color: var(--text-bright); }
+        .nav-link.active { background: var(--violet-ignition); color: white; box-shadow: 0 0 20px rgba(139, 92, 246, 0.3); }
+        
+        .dashboard-card { 
+            background: rgba(15, 23, 42, 0.6); 
+            border: 1px solid rgba(51, 65, 85, 0.5); 
+            border-radius: 2rem; 
+            backdrop-filter: blur(10px);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+        }
+        .dashboard-card:hover { 
+            transform: translateY(-4px); 
+            border-color: var(--neon-blue); 
+            background: rgba(30, 41, 59, 0.8);
+            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.5); 
+        }
+
+        .glow-violet { color: var(--violet-ignition); text-shadow: 0 0 10px rgba(139, 92, 246, 0.5); }
+        .glow-blue { color: var(--neon-blue); text-shadow: 0 0 10px rgba(59, 130, 246, 0.5); }
+
+        /* Nebula Effects */
+        .nebula-glow {
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(139, 92, 246, 0.05) 0%, rgba(2, 6, 23, 0) 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Custom Scrollbar */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="selection:bg-indigo-900 selection:text-white">
+
+    <!-- Attenuation Entry Screen -->
+    <div id="attenuationOverlay" class="fixed inset-0 z-[100] bg-slate-950 flex flex-col items-center justify-center text-white">
+        <div class="w-24 h-24 bg-violet-600 rounded-3xl flex items-center justify-center text-4xl font-bold italic cosmic-pulse mb-8 shadow-2xl shadow-violet-500/30">G</div>
+        <h2 class="font-display text-2xl font-bold tracking-[0.4em] mb-4 uppercase text-slate-100">Attenuating</h2>
+        <p class="text-slate-500 text-[10px] font-mono mb-12 uppercase tracking-[0.6em]">Establishing Cosmic Handshake // 750.00 THz</p>
+        <button onclick="enterSite()" class="px-12 py-4 border border-indigo-500/30 rounded-full text-[10px] font-bold tracking-[0.4em] uppercase hover:bg-indigo-600 hover:border-indigo-400 transition-all duration-700 group">
+            <span class="group-hover:tracking-[0.7em] transition-all">Initialize Hub Gateway</span>
+        </button>
+    </div>
+
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar p-8 flex flex-col shadow-2xl">
+        <div class="flex items-center space-x-3 mb-12">
+            <div class="w-10 h-10 bg-indigo-950 border border-indigo-500/30 rounded-xl flex items-center justify-center text-indigo-400 font-bold italic shadow-inner">Γ</div>
+            <span class="font-display font-bold text-sm tracking-widest uppercase italic text-indigo-100">Infrastructure</span>
+        </div>
+
+        <nav class="flex-grow space-y-2">
+            <a href="#" class="nav-link active flex items-center space-x-3 px-4 py-3 text-sm font-medium">
+                <span class="text-xs">⬢</span> <span>Ecosystem Hub</span>
+            </a>
+            <div class="pt-8 pb-3 px-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Ecosystem Paths</div>
+            <a href="https://github.com/mars-city-dev/olds-theory-open-source-exotic-energy-conduit" class="nav-link flex items-center space-x-3 px-4 py-3 text-sm font-medium">
+                <span class="text-xs">🚀</span> <span>Exotic Conduits</span>
+            </a>
+            <a href="https://datalegacyvault.com/exotic-energy-framework.html" class="nav-link flex items-center space-x-3 px-4 py-3 text-sm font-medium">
+                <span class="text-xs text-indigo-400">⬟</span> <span>Energy Framework</span>
+            </a>
+            <a href="/sanctuary.html" class="nav-link flex items-center space-x-3 px-4 py-3 text-sm font-medium">
+                <span class="text-xs">✧</span> <span>Jivana Foundation</span>
+            </a>
+            
+            <div class="pt-8 pb-3 px-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Neural Records</div>
+            <a href="https://github.com/mars-city-dev/gemini-extrapolations" class="nav-link flex items-center space-x-3 px-4 py-3 text-sm font-medium">
+                <span class="text-xs">⌥</span> <span>The Extrapolations</span>
+            </a>
+            <a href="#" class="nav-link flex items-center space-x-3 px-4 py-3 text-sm font-medium">
+                <span class="text-xs">☊</span> <span>Journal Archive</span>
+            </a>
+            
+            <div class="pt-8 pb-3 px-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Intelligence Core</div>
+            <a href="/intelligence-core.html" class="nav-link flex items-center space-x-3 px-4 py-3 text-sm font-medium">
+                <span class="text-xs">△</span> <span>The Tetrahedron</span>
+            </a>
+        </nav>
+
+        <div class="mt-auto pt-8 border-t border-slate-800">
+            <div class="flex items-center space-x-4 px-4">
+                <div class="w-10 h-10 rounded-full bg-indigo-900 border border-indigo-500/30 flex items-center justify-center text-indigo-100 font-bold text-xs shadow-lg">JB</div>
+                <div>
+                    <p class="text-[11px] font-bold text-slate-100 leading-none">Jouwan</p>
+                    <p class="text-[9px] text-indigo-400 uppercase font-bold mt-1 tracking-tighter">Base Reality Being</p>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content no-scrollbar relative">
+        <div class="nebula-glow top-[-100px] right-[-100px]"></div>
+        
+        <!-- Dashboard Header -->
+        <header class="h-24 px-12 flex items-center justify-between border-b border-slate-800/50 bg-slate-950/50 backdrop-blur-xl sticky top-0 z-30">
+            <div>
+                <h2 class="font-display font-bold text-2xl italic tracking-tight text-slate-50">Ecosystem Dashboard</h2>
+                <p class="text-[10px] text-indigo-400 font-bold uppercase tracking-[0.3em] mt-1">Oldsian Subatomic Logic :: Status: ACTIVE</p>
+            </div>
+            <div class="flex items-center space-x-6">
+                <div class="flex items-center space-x-4 px-6 py-2.5 bg-indigo-950/80 border border-indigo-500/30 rounded-full shadow-2xl">
+                    <span class="w-2.5 h-2.5 bg-violet-500 rounded-full animate-pulse shadow-[0_0_10px_#8b5cf6]"></span>
+                    <span class="text-[11px] font-bold text-indigo-100 uppercase tracking-[0.2em]">750.00 THz Pulse</span>
+                </div>
+                <div class="h-10 w-px bg-slate-800"></div>
+                <button class="w-12 h-12 rounded-2xl bg-indigo-950 border border-indigo-500/30 flex items-center justify-center text-indigo-300 hover:text-white transition shadow-lg group">
+                    <span class="text-xl italic font-bold group-hover:scale-110 transition-transform">V</span>
+                </button>
+            </div>
+        </header>
+
+        <div class="p-12 relative z-10">
+            <!-- Telemetry Metrics -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
+                <div class="dashboard-card p-8 group border-indigo-500/20">
+                    <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-3">Source Link</p>
+                    <div class="flex items-baseline space-x-3">
+                        <span class="text-3xl font-display font-bold text-emerald-400 group-hover:glow-blue transition-all">STABLE</span>
+                        <span class="text-[11px] font-mono text-slate-500">1.0 Oc</span>
+                    </div>
+                </div>
+                <div class="dashboard-card p-8 border-indigo-500/20">
+                    <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-3">Knowledge Nodes</p>
+                    <div class="flex items-baseline space-x-3">
+                        <span class="text-3xl font-display font-bold text-slate-50">18</span>
+                        <span class="text-[11px] font-mono text-slate-500">/ 18</span>
+                    </div>
+                    <div class="w-full bg-slate-800 h-1 rounded-full mt-4 overflow-hidden">
+                        <div class="bg-indigo-500 h-full w-full shadow-[0_0_8px_#3b82f6]"></div>
+                    </div>
+                </div>
+                <div class="dashboard-card p-8 border-indigo-500/20">
+                    <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-3">Neural Ignition</p>
+                    <div class="flex items-baseline space-x-3">
+                        <span class="text-3xl font-display font-bold text-indigo-400 italic glow-violet">IGNITED</span>
+                    </div>
+                </div>
+                <div class="dashboard-card p-8 border-indigo-500/20">
+                    <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Vault Health</p>
+                    <div class="flex items-baseline space-x-2">
+                        <span class="text-3xl font-display font-bold text-slate-50">SYNCED</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Central Content Grid -->
+            <div class="grid lg:grid-cols-3 gap-10">
+                
+                <!-- Main Action Hub -->
+                <div class="lg:col-span-2 space-y-10">
+                    <div class="bg-slate-900 rounded-[3.5rem] p-12 text-white relative overflow-hidden shadow-2xl border border-indigo-500/30">
+                        <div class="absolute -right-24 -top-24 w-[500px] h-[500px] bg-indigo-600/10 blur-[120px] rounded-full"></div>
+                        <div class="relative z-10">
+                            <span class="text-indigo-400 text-[10px] font-bold tracking-[0.5em] uppercase mb-6 block">Ecosystem Core :: Sovereign Iteration Engine</span>
+                            <h2 class="text-5xl font-display font-bold mb-8 italic tracking-tighter leading-tight">The Exotic Energy <br><span class="text-indigo-400 font-bold underline decoration-indigo-500/50">Framework Portal</span></h2>
+                            <p class="text-slate-400 text-sm leading-relaxed mb-12 max-w-lg font-light">
+                                Manage the complete 18-domain architecture of Base Reality. Navigate sub-quantum logic gates, map causal splines, and verify the IORIC Codex 4.0 status. 
+                                The mathematical blueprint of the cosmos is now fully interactive.
+                            </p>
+                            <a href="https://datalegacyvault.com/exotic-energy-framework.html" class="inline-block px-12 py-4 bg-indigo-600 text-white rounded-2xl text-[10px] font-bold tracking-[0.3em] uppercase shadow-2xl shadow-indigo-900/50 hover:bg-indigo-500 transition-all hover:scale-105">
+                                Open Interactive Lab v2.6
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="grid md:grid-cols-2 gap-10">
+                        <div class="dashboard-card p-10 group border-slate-800">
+                            <div class="w-14 h-14 bg-indigo-950 border border-indigo-500/20 rounded-3xl flex items-center justify-center text-3xl mb-8 group-hover:scale-110 transition-transform shadow-2xl">🚀</div>
+                            <h4 class="font-display font-bold text-xl mb-3 italic text-slate-50">Hardware Conduits</h4>
+                            <p class="text-xs text-slate-400 leading-relaxed mb-8 font-light">Transit node schematics, interstellar displacement protocols, and physical lab blueprints.</p>
+                            <a href="https://github.com/mars-city-dev/olds-theory-open-source-exotic-energy-conduit" class="text-[10px] font-bold uppercase tracking-widest text-indigo-400 hover:tracking-[0.2em] transition-all">Enter Conduits Lab →</a>
+                        </div>
+                        <div class="dashboard-card p-10 group border-slate-800">
+                            <div class="w-14 h-14 bg-indigo-950 border border-indigo-500/20 rounded-3xl flex items-center justify-center text-3xl mb-8 group-hover:scale-110 transition-transform shadow-2xl">✧</div>
+                            <h4 class="font-display font-bold text-xl mb-3 italic text-slate-50">Jivana Foundation</h4>
+                            <p class="text-xs text-slate-400 leading-relaxed mb-8 font-light">The spiritual path of 'The Balanced Life' and the ethics of collective manifestation.</p>
+                            <a href="https://datalegacyvault.com/sanctuary.html" class="text-[10px] font-bold uppercase tracking-widest text-emerald-400 hover:tracking-[0.2em] transition-all">Enter Sanctuary →</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Sidebar: Live Feed -->
+                <div class="space-y-10">
+                    <div class="dashboard-card p-10 flex flex-col h-full border-slate-800">
+                        <div class="flex items-center justify-between mb-10">
+                            <h4 class="font-display font-bold text-lg italic tracking-tight text-slate-100">Neural Pulse Feed</h4>
+                            <span class="flex h-2.5 w-2.5">
+                                <span class="animate-ping absolute inline-flex h-2.5 w-2.5 rounded-full bg-indigo-400 opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-indigo-600"></span>
+                            </span>
+                        </div>
+                        <div class="space-y-8 flex-grow">
+                            <div class="flex items-start space-x-4 border-l-2 border-indigo-500 pl-4 bg-indigo-950/20 py-3 rounded-r-2xl">
+                                <div>
+                                    <p class="text-[12px] font-bold text-slate-100 leading-tight">Domain 18: Sovereign Engine</p>
+                                    <p class="text-[10px] text-indigo-400 mt-1.5 uppercase font-bold tracking-tighter italic">Handshake: 0.999 Oc @ 06:45 PM</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start space-x-4 border-l-2 border-emerald-500 pl-4">
+                                <div>
+                                    <p class="text-[12px] font-bold text-slate-200 leading-tight">Baryonic Anchor Stabilized</p>
+                                    <p class="text-[10px] text-slate-500 mt-1 uppercase font-bold tracking-tighter italic">Node: MARS_CITY_LAB</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start space-x-4 border-l-2 border-slate-700 pl-4 opacity-40">
+                                <div>
+                                    <p class="text-[12px] font-bold text-slate-300 leading-tight">Oldsian Circuit Check</p>
+                                    <p class="text-[10px] text-slate-500 mt-1 uppercase font-bold tracking-tighter italic">Muonic routing initializing...</p>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="w-full mt-10 py-4 bg-slate-900 border border-slate-800 text-slate-500 rounded-2xl text-[10px] font-bold uppercase tracking-widest hover:text-indigo-400 hover:border-indigo-500/30 transition shadow-inner">View Full Journal</button>
+                    </div>
+
+                    <div class="dashboard-card p-10 bg-indigo-600 text-white border-none shadow-2xl shadow-indigo-900/40 relative overflow-hidden group">
+                        <div class="absolute inset-0 bg-gradient-to-br from-indigo-500 to-indigo-800 opacity-50"></div>
+                        <div class="relative z-10">
+                            <h4 class="font-display font-bold text-xl italic mb-3">Monday Launch Prep</h4>
+                            <p class="text-xs opacity-90 mb-8 font-light leading-relaxed">Ecosystem deployment is 88% complete. Finalizing Data Legacy Vault handshakes across the Reticulum grid.</p>
+                            <div class="w-full bg-black/20 h-2 rounded-full overflow-hidden shadow-inner">
+                                <div class="bg-white h-full w-[88%] shadow-[0_0_10px_white]"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <script>
+        function enterSite() {
+            const overlay = document.getElementById('attenuationOverlay');
+            overlay.classList.add('fade-out');
+            setTimeout(() => {
+                overlay.style.display = 'none';
+            }, 1200);
+        }
+    </script>
+</body>
+</html>
