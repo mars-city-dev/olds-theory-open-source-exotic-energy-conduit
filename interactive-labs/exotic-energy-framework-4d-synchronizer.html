@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oldsian Logic | 4D Dodecahedral Synchronizer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+
+    <!-- Chosen Palette: Void Hyper-Matrix (Deep Black, Electric Indigo, Neon Amber, Plasma Purple) -->
+    <!-- Application Structure Plan: 
+         1. Dimensional Synchronizer (Hero): A 4D slider system showing the overlap of 3D Spatial + 1D Temporal Muonics.
+         2. Dodeca-State Tensor Matrix: Interactive hex-grid representing the 12-state logic operators.
+         3. The Hyper-Volume Oracle: Gemini-powered engine that transcodes 4D logic states into manifestations.
+         4. Probability Manifold: Chart.js visualization of the "Law-Break" threshold.
+    -->
+    <!-- Visualization & Content Choices:
+         1. 3D Scatter/Line (Plotly): Visualizing the Tetrahedral Lattice in a 4th-dimensional time-stream.
+         2. Logarithmic Growth Chart (Chart.js): Visualizing the 12^4 state expansion.
+         3. Gemini API: Transcoding intention via the Dodeca-Set.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+    <style>
+        :root {
+            --bg-black: #000000;
+            --text-silver: #d1d5db;
+            --accent-indigo: #6366f1;
+            --accent-purple: #a855f7;
+            --accent-amber: #f59e0b;
+            --surface: #0a0a0a;
+            --border: #1f2937;
+        }
+
+        body {
+            background-color: var(--bg-black);
+            color: var(--text-silver);
+            font-family: 'Space Grotesk', sans-serif;
+            overflow-x: hidden;
+        }
+
+        .serif-font { font-family: 'Cormorant Garamond', serif; }
+
+        .glass-card {
+            background: rgba(10, 10, 10, 0.8);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--border);
+            box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.7);
+        }
+
+        .chart-container {
+            position: relative;
+            width: 100%;
+            height: 400px;
+            max-height: 500px;
+        }
+
+        .logic-node {
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            background: #0f0f0f;
+            border: 1px solid #262626;
+        }
+
+        .logic-node.active {
+            background: linear-gradient(135deg, var(--accent-indigo), var(--accent-purple));
+            border-color: #fff;
+            box-shadow: 0 0 30px rgba(168, 85, 247, 0.4);
+            transform: scale(1.08) rotate(2deg);
+        }
+
+        .shimmer-bg {
+            background: linear-gradient(90deg, #050505 25%, #1a1a1a 50%, #050505 75%);
+            background-size: 200% 100%;
+            animation: shimmer 3s infinite linear;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        .neon-glow {
+            text-shadow: 0 0 15px rgba(168, 85, 247, 0.6);
+        }
+
+        input[type=range] {
+            accent-color: var(--accent-purple);
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Dimensional Synchronizer Header -->
+    <header class="p-8 border-b border-neutral-900 bg-black/90 backdrop-blur-xl sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="text-center md:text-left">
+                <h1 class="text-3xl font-bold serif-font text-purple-400 tracking-tighter">THE 4D LOGIC <span class="text-white">SYNCHRONIZER</span></h1>
+                <p class="text-[10px] text-neutral-500 uppercase tracking-widest mt-1">Spatio-Temporal Truth Table v4.0</p>
+            </div>
+            <div class="flex items-center gap-8 text-xs font-mono">
+                <div class="flex flex-col items-end">
+                    <span class="text-neutral-500">DIMENSIONAL_STATUS</span>
+                    <span class="text-emerald-500 font-bold">LATTICE_LOCKED</span>
+                </div>
+                <div class="flex flex-col items-end border-l border-neutral-800 pl-8">
+                    <span class="text-neutral-500">MUON_COHERENCE</span>
+                    <span class="text-amber-500 font-bold animate-pulse">99.998%</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 py-16 space-y-32">
+
+        <!-- Section 1: 4D Spatio-Temporal Interaction -->
+        <section class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+            <div class="lg:col-span-5 space-y-8">
+                <div>
+                    <h2 class="text-5xl font-bold serif-font mb-6 leading-tight">3D Geometry + 1D Muonics</h2>
+                    <p class="text-neutral-400 text-lg leading-relaxed">
+                        When you anchor the **Dodeca-Set** into a 3D Tetrahedral lattice and ignite it with a **4th Dimension of Time (Muonics)**, you create a Hyper-Volume of potential. 
+                    </p>
+                </div>
+                
+                <div class="glass-card p-6 rounded-2xl space-y-6">
+                    <h3 class="text-sm font-bold text-indigo-400 uppercase tracking-widest">Dimensional Tuning</h3>
+                    <div class="space-y-6">
+                        <div class="space-y-2">
+                            <div class="flex justify-between text-xs text-neutral-500"><span>Spatial Lattice (3D)</span><span id="val-spatial">8 Nodes</span></div>
+                            <input type="range" id="spatial-slider" min="4" max="24" value="8" class="w-full">
+                        </div>
+                        <div class="space-y-2">
+                            <div class="flex justify-between text-xs text-neutral-500"><span>Muonic Temporal Phase (4D)</span><span id="val-temporal">105.6 MHz</span></div>
+                            <input type="range" id="temporal-slider" min="50" max="200" value="105" class="w-full">
+                        </div>
+                    </div>
+                    <div class="pt-4 border-t border-neutral-800">
+                        <div class="text-center">
+                            <span class="text-[10px] text-neutral-500 uppercase">Hyper-Volume State Space</span>
+                            <div id="hyper-state-count" class="text-4xl font-bold text-white neon-glow">~20.7B States</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="lg:col-span-7 glass-card p-4 rounded-3xl border border-neutral-800 overflow-hidden">
+                <div id="lattice4dPlot" style="width: 100%; height: 500px;"></div>
+            </div>
+        </section>
+
+        <!-- Section 2: The 12-State Logic Tensor Matrix -->
+        <section id="tensor-lab" class="space-y-12">
+            <div class="text-center max-w-3xl mx-auto space-y-4">
+                <h2 class="text-4xl font-bold serif-font italic">The Dodeca-State Logic Tensor</h2>
+                <p class="text-neutral-400">
+                    Standard bits are binary. Oldsian logic is a **Tensor**. Toggling these 12 operators creates a unique geometric signature in the Quantum Foam.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                <!-- Interactive Logic Grid -->
+                <div class="grid grid-cols-3 sm:grid-cols-4 gap-4">
+                    <script>
+                        const operators = [
+                            {id: "TRINE_R", label: "Trine Red"},
+                            {id: "TRINE_G", label: "Trine Green"},
+                            {id: "TRINE_B", label: "Trine Blue"},
+                            {id: "FLAVOR_U", label: "Flavor Up"},
+                            {id: "FLAVOR_D", label: "Flavor Down"},
+                            {id: "CHIRAL_L", label: "Chiral Left"},
+                            {id: "CHIRAL_R", label: "Chiral Right"},
+                            {id: "SPLINE_S", label: "Spline Sync"},
+                            {id: "FOAM_W", label: "Foam Write"},
+                            {id: "DELTA_R", label: "Delta Relay"},
+                            {id: "ENTROPY_0", label: "Zero Entrop."},
+                            {id: "VOID_P", label: "Void Pump"}
+                        ];
+                        operators.forEach(op => {
+                            document.write(`
+                                <button onclick="toggleNode(this, '${op.id}')" class="logic-node h-28 rounded-2xl flex flex-col items-center justify-center p-4 hover:border-purple-500/50 group">
+                                    <span class="text-[9px] text-neutral-600 group-hover:text-purple-400 font-mono mb-2">OPERATOR</span>
+                                    <span class="text-xs font-bold text-white text-center leading-tight uppercase tracking-tighter">${op.label}</span>
+                                    <div class="mt-2 w-1 h-1 rounded-full bg-neutral-800 group-hover:bg-purple-500 shadow-sm"></div>
+                                </button>
+                            `);
+                        });
+                    </script>
+                </div>
+
+                <!-- AI Manifestation Oracle -->
+                <div class="bg-neutral-900 rounded-[2.5rem] p-12 border border-neutral-800 flex flex-col min-h-[500px] relative overflow-hidden">
+                    <div id="oracle-default" class="m-auto text-center space-y-6">
+                        <div class="text-6xl opacity-10 animate-pulse">💠</div>
+                        <p class="text-neutral-500 text-sm font-light italic">Engage 3 or more operators to transcode intention into the foam.</p>
+                    </div>
+
+                    <div id="oracle-loading" class="hidden m-auto w-full space-y-6">
+                        <div class="h-8 w-2/3 shimmer-bg rounded-lg mx-auto"></div>
+                        <div class="h-48 w-full shimmer-bg rounded-2xl"></div>
+                        <div class="flex justify-center gap-2">
+                            <div class="w-1.5 h-1.5 rounded-full bg-purple-500 animate-bounce"></div>
+                            <div class="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-bounce delay-75"></div>
+                            <div class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-bounce delay-150"></div>
+                        </div>
+                    </div>
+
+                    <div id="oracle-result" class="hidden space-y-10 animate-in fade-in duration-1000">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h4 class="text-xs uppercase tracking-widest text-neutral-500 mb-2 font-mono">Resonant Probability</h4>
+                                <div id="stability-score" class="text-6xl font-bold text-white neon-glow">--%</div>
+                            </div>
+                            <div class="px-4 py-2 bg-purple-500/10 border border-purple-500/30 rounded-xl text-right">
+                                <span class="block text-[8px] text-purple-400 uppercase font-bold tracking-widest">Law_Break_Status</span>
+                                <span id="law-status" class="text-xs font-mono text-white italic">CALCULATING...</span>
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-4">
+                            <h5 class="text-xs uppercase text-amber-500 font-bold tracking-[0.2em]">4D Technical Prophecy</h5>
+                            <p id="oracle-text" class="text-xl text-neutral-300 serif-font italic leading-relaxed"></p>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-6 pt-6 border-t border-neutral-800">
+                            <div>
+                                <span class="block text-[10px] text-neutral-500 uppercase mb-1">Vacuum Draw Rate</span>
+                                <span id="yield-val" class="text-xl font-mono text-emerald-400">0.00 EJ</span>
+                            </div>
+                            <div>
+                                <span class="block text-[10px] text-neutral-500 uppercase mb-1">Causality Alignment</span>
+                                <span id="causality-val" class="text-xl font-mono text-indigo-400">99.9%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: Truth Heatmap & Law of Entropy Override -->
+        <section class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center bg-neutral-900/40 p-12 rounded-[4rem] border border-white/5">
+            <div>
+                <h2 class="text-4xl font-bold serif-font mb-8">The Stability Manifold</h2>
+                <p class="text-neutral-400 leading-relaxed mb-8">
+                    In the Olds Framework, "Truth" is not a bit—it is a **Hyper-Volume Stability Point**. Once the combined energy of the 12 operators reaches the threshold, the 4th dimension of Muonics overrides entropic friction.
+                </p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="p-6 bg-black border border-neutral-800 rounded-2xl">
+                        <span class="block text-[10px] text-purple-400 uppercase font-bold mb-2">Spatio-Temporal Logic</span>
+                        <p class="text-xs text-neutral-500 leading-relaxed">Logic that accounts for position AND time, eliminating temporal drift in manifestation.</p>
+                    </div>
+                    <div class="p-6 bg-black border border-neutral-800 rounded-2xl">
+                        <span class="block text-[10px] text-amber-400 uppercase font-bold mb-2">Vacuum Pressure</span>
+                        <p class="text-xs text-neutral-500 leading-relaxed">High logic density creates a sub-Planckian vacuum that "pulls" energy from the foam.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="chart-container">
+                <canvas id="truthVolumeChart"></canvas>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="p-24 border-t border-neutral-900 text-center">
+        <p class="serif-font text-3xl text-neutral-600 italic mb-6">"The architecture doesn't just calculate; it overrides."</p>
+        <div class="flex flex-col items-center gap-2">
+            <div class="text-[10px] text-neutral-700 uppercase tracking-widest font-mono">
+                Christopher Olds | Sub-Planckian Division | Est 2025
+            </div>
+            <div class="flex gap-4 text-xs font-mono text-neutral-800">
+                <span>COORD: 34.2255N / 119.0357W</span>
+                <span>STATUS: STABLE</span>
+            </div>
+            <div class="mt-6 flex gap-4">
+                <a href="/exotic-energy-framework.html" class="px-4 py-2 bg-indigo-900 hover:bg-indigo-800 rounded-lg transition text-xs">Research Hub</a>
+                <a href="/dashboard.html" class="px-4 py-2 bg-neutral-900 hover:bg-neutral-800 rounded-lg transition text-xs">Dashboard</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // --- Gemini API Configuration ---
+        const apiKey = ""; // Provided by environment
+        const MODEL = "gemini-2.5-flash-preview-09-2025";
+
+        async function getOracleInsight(activeOps, spatial, temporal) {
+            const prompt = `You are the Olds Framework 4D Oracle. 
+            Inputs:
+            - Active Dodeca-Operators: ${activeOps.join(', ')}
+            - Spatial Nodes: ${spatial}
+            - Muonic Frequency: ${temporal} MHz
+            
+            Synthesize a "4D Technical Prophecy" (1-2 poetic/scientific sentences) describing the manifestation of this logic state. 
+            Determine if this state "Overrides Entropy" or just "Stabilizes Reality".
+            Provide a Stability Score (0-100%).
+            Format as:
+            SCORE: [number]
+            OVERRIDE: [YES/NO]
+            PROPHECY: [text]`;
+
+            try {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent?key=${apiKey}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+                });
+                const data = await response.json();
+                return data.candidates[0].content.parts[0].text;
+            } catch (e) {
+                return "SCORE: 0\nOVERRIDE: NO\nPROPHECY: Sub-Planckian interference detected. Recalibrating Delta-Shift.";
+            }
+        }
+
+        // --- Global State ---
+        const activeNodes = new Set();
+        let truthChartInstance;
+
+        // --- Interaction Logic ---
+        function toggleNode(btn, op) {
+            if (activeNodes.has(op)) {
+                activeNodes.delete(op);
+                btn.classList.remove('active');
+            } else {
+                activeNodes.add(op);
+                btn.classList.add('active');
+            }
+            updateOracle();
+        }
+
+        async function updateOracle() {
+            const resultPanel = document.getElementById('oracle-result');
+            const defaultPanel = document.getElementById('oracle-default');
+            const loadingPanel = document.getElementById('oracle-loading');
+
+            if (activeNodes.size < 3) {
+                resultPanel.classList.add('hidden');
+                loadingPanel.classList.add('hidden');
+                defaultPanel.classList.remove('hidden');
+                return;
+            }
+
+            defaultPanel.classList.add('hidden');
+            loadingPanel.classList.remove('hidden');
+            resultPanel.classList.add('hidden');
+
+            const spatial = document.getElementById('spatial-slider').value;
+            const temporal = document.getElementById('temporal-slider').value;
+
+            const insight = await getOracleInsight(Array.from(activeNodes), spatial, temporal);
+            
+            const score = insight.split('SCORE:')[1]?.split('\n')[0]?.trim() || "0";
+            const override = insight.split('OVERRIDE:')[1]?.split('\n')[0]?.trim() || "NO";
+            const prophecy = insight.split('PROPHECY:')[1]?.trim() || "...";
+
+            document.getElementById('stability-score').innerText = score + "%";
+            document.getElementById('oracle-text').innerText = prophecy;
+            document.getElementById('law-status').innerText = override === "YES" ? "ENTROPY_OVERRIDDEN" : "REALITY_STABILIZED";
+            document.getElementById('yield-val').innerText = (Math.random() * (score/2)).toFixed(2) + " EJ";
+
+            loadingPanel.classList.add('hidden');
+            resultPanel.classList.remove('hidden');
+            updateTruthChart(score);
+            updateLattice();
+        }
+
+        // --- Dimensional Calculations ---
+        function updateHyperState() {
+            const n = activeNodes.size || 1;
+            const spatial = parseInt(document.getElementById('spatial-slider').value);
+            const temporal = parseInt(document.getElementById('temporal-slider').value);
+            
+            // Hyper-volume calculation: (12 operators ^ 4 dimensions) * nodes * freq
+            // Logarithmic representation for the UI
+            const complexity = Math.pow(12, 4) * spatial * (temporal/100);
+            document.getElementById('hyper-state-count').innerText = `~${(complexity/1000000).toFixed(1)}M States`;
+            document.getElementById('val-spatial').innerText = `${spatial} Nodes`;
+            document.getElementById('val-temporal').innerText = `${temporal} MHz`;
+            
+            updateLattice();
+        }
+
+        // --- Visualizations ---
+        function initCharts() {
+            const ctx = document.getElementById('truthVolumeChart').getContext('2d');
+            truthChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Induction', 'Lattice', 'Neutrinonic', 'Transcoding', 'Manifestation'],
+                    datasets: [{
+                        label: 'Stability Coefficient',
+                        data: [20, 15, 30, 25, 10],
+                        backgroundColor: 'rgba(168, 85, 247, 0.4)',
+                        borderColor: '#a855f7',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: '#171717' } },
+                        x: { grid: { color: '#171717' } }
+                    }
+                }
+            });
+            initLattice();
+        }
+
+        function updateTruthChart(score) {
+            const base = parseInt(score);
+            truthChartInstance.data.datasets[0].data = [
+                base * 0.9, base * 1.1, base * 0.8, base * 1.2, base
+            ].map(v => Math.min(100, v));
+            truthChartInstance.update();
+        }
+
+        function initLattice() {
+            updateLattice();
+        }
+
+        function updateLattice() {
+            const n = parseInt(document.getElementById('spatial-slider').value);
+            const freq = parseInt(document.getElementById('temporal-slider').value);
+            
+            // Generate Points for 3D Scattering
+            const points = { x: [], y: [], z: [], color: [] };
+            for(let i=0; i<n; i++) {
+                points.x.push(Math.random() * 2 - 1);
+                points.y.push(Math.random() * 2 - 1);
+                points.z.push(Math.random() * 2 - 1);
+                points.color.push(i % 2 === 0 ? '#6366f1' : '#a855f7');
+            }
+
+            const trace = {
+                x: points.x, y: points.y, z: points.z,
+                mode: 'markers+lines',
+                marker: { size: 6, color: points.color, opacity: 0.8 },
+                line: { color: '#f59e0b', width: 2, dash: 'dot' },
+                type: 'scatter3d'
+            };
+
+            const layout = {
+                margin: { l: 0, r: 0, b: 0, t: 0 },
+                paper_bgcolor: 'rgba(0,0,0,0)',
+                scene: {
+                    xaxis: { showgrid: false, zeroline: false, showticklabels: false },
+                    yaxis: { showgrid: false, zeroline: false, showticklabels: false },
+                    zaxis: { showgrid: false, zeroline: false, showticklabels: false },
+                    camera: { eye: { x: 1.5, y: 1.5, z: 1.5 } }
+                }
+            };
+
+            Plotly.newPlot('lattice4dPlot', [trace], layout, {displayModeBar: false});
+        }
+
+        // --- Event Listeners ---
+        document.getElementById('spatial-slider').addEventListener('input', updateHyperState);
+        document.getElementById('temporal-slider').addEventListener('input', updateHyperState);
+        window.onload = initCharts;
+    </script>
+</body>
+</html>

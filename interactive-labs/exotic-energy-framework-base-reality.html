@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EEF Lab - Base Reality Visualizer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background: #050A30;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+        }
+        
+        canvas {
+            display: block;
+        }
+        
+        .range-slider {
+            appearance: none;
+            width: 100%;
+            height: 8px;
+            border-radius: 9999px;
+            background: rgba(255, 255, 255, 0.1);
+            outline: none;
+            -webkit-appearance: none;
+        }
+        
+        .range-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #FFD700;
+            cursor: pointer;
+            box-shadow: 0 0 10px #FFD700;
+        }
+        
+        .range-slider::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #FFD700;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 0 10px #FFD700;
+        }
+        
+        .revealed-glow {
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+        }
+        
+        .source-one-glow {
+            animation: source-pulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes source-pulse {
+            0%, 100% {
+                box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+            }
+            50% {
+                box-shadow: 0 0 50px rgba(255, 215, 0, 0.6);
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-[#050A30] text-white p-6 md:p-12 font-sans selection:bg-yellow-500/30 overflow-hidden">
+    <div class="max-w-6xl mx-auto space-y-10">
+        
+        <!-- Header -->
+        <header class="flex flex-col md:flex-row justify-between items-start gap-6">
+            <div>
+                <div class="flex items-center gap-2 mb-2">
+                    <!-- Sparkles Icon SVG -->
+                    <svg class="text-yellow-400" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 3v6m6-3h-6M6 9h6"></path>
+                        <circle cx="12" cy="12" r="9"></circle>
+                    </svg>
+                    <span class="text-xs font-bold text-yellow-400 uppercase tracking-[0.4em]">The 0th Spline Protocol</span>
+                </div>
+                <h1 class="text-5xl font-black italic tracking-tighter uppercase">Base Reality</h1>
+                <p class="text-blue-200/60 mt-1">Peeling back the Loom to reveal the Source Waveform</p>
+            </div>
+            <div class="bg-white/5 p-6 rounded-3xl border border-white/10 text-right min-w-[240px]">
+                <p class="text-[10px] uppercase font-bold text-yellow-500 mb-1">Source Coherence</p>
+                <p class="text-4xl font-mono text-yellow-400" id="coherenceDisplay">0.00%</p>
+            </div>
+        </header>
+
+        <!-- Visualization Canvas -->
+        <div class="relative bg-black/80 rounded-[3rem] border border-yellow-500/20 h-[500px] overflow-hidden flex items-center justify-center shadow-[0_0_50px_rgba(255,215,0,0.05)]">
+            <canvas id="mainCanvas" width="1000" height="500" class="w-full h-full"></canvas>
+            
+            <div class="absolute top-8 left-8 flex flex-col gap-3">
+                <button 
+                    id="peelBtn"
+                    class="flex items-center gap-3 px-6 py-3 rounded-full border transition-all font-black text-xs uppercase tracking-widest bg-black/60 border-white/10 text-white/40 hover:text-white"
+                >
+                    <!-- EyeOff Icon SVG (default) -->
+                    <svg class="icon-eye" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-4-11-4s1.6-2.35 4.06-4.06m2.88-2.88A5.99 5.99 0 0 1 12 4c7 0 11 4 11 4s-1.6 2.35-4.06 4.06M1 1l22 22"></path>
+                    </svg>
+                    <span class="peel-text">Peel Back Layers</span>
+                </button>
+            </div>
+
+            <div id="projectedMesh" class="absolute inset-0 flex items-center justify-center pointer-events-none bg-black/20 backdrop-blur-[2px]">
+                <p class="text-[10px] uppercase tracking-[0.6em] font-black text-blue-400/40 animate-pulse">
+                    Projected Mesh Active
+                </p>
+            </div>
+            
+            <div id="phiSearching" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none hidden">
+                <p class="text-[10px] uppercase tracking-[0.3em] font-bold text-yellow-500/40">Searching for Phi-Lock...</p>
+            </div>
+        </div>
+
+        <!-- Controls -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            <!-- Left: Phi Tuning -->
+            <div class="lg:col-span-2 bg-white/5 rounded-[2.5rem] p-10 border border-white/10 space-y-10">
+                <div class="space-y-6">
+                    <div class="flex justify-between items-center">
+                        <label class="text-xs font-bold text-yellow-500 uppercase tracking-widest font-mono">Phi-Resonance Tuning (φ)</label>
+                        <span class="text-2xl font-mono text-yellow-500" id="phiDisplay">1.000000</span>
+                    </div>
+                    <input 
+                        id="phiSlider"
+                        type="range" 
+                        min="1.0" 
+                        max="2.0" 
+                        step="0.000001"
+                        value="1.0"
+                        class="range-slider"
+                    />
+                    <div class="flex justify-between text-[10px] font-bold text-white/20 uppercase tracking-widest">
+                        <span>1.0 Baseline</span>
+                        <button 
+                            id="autoLockBtn"
+                            class="hover:text-yellow-500 transition-colors"
+                        >Auto-Lock Φ</button>
+                        <span>2.0 Over-Tension</span>
+                    </div>
+                </div>
+
+                <!-- Status Indicators -->
+                <div class="grid grid-cols-2 gap-6 pt-4 border-t border-white/5">
+                    <div id="phaseLock" class="p-5 rounded-2xl border transition-all flex items-center gap-4 bg-white/5 border-white/10 opacity-30">
+                        <!-- Lock Icon SVG -->
+                        <svg class="text-yellow-500" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                        </svg>
+                        <div>
+                            <p class="text-[10px] font-bold text-yellow-500 uppercase">Phase Lock</p>
+                            <p class="text-xs text-white">Base Reality Synced</p>
+                        </div>
+                    </div>
+                    <div id="sourceData" class="p-5 rounded-2xl border transition-all flex items-center gap-4 bg-white/5 border-white/10 opacity-30">
+                        <!-- Maximize2 Icon SVG -->
+                        <svg class="text-white" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
+                        </svg>
+                        <div>
+                            <p class="text-[10px] font-bold text-white uppercase">Source Data</p>
+                            <p class="text-xs text-white">BRS Streaming Active</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Architect's Vision & State -->
+            <div class="flex flex-col gap-6">
+                <div class="bg-white/5 p-8 rounded-[2rem] border border-white/10 flex-grow relative">
+                    <div class="flex items-center gap-3 mb-4">
+                        <!-- Orbit Icon SVG -->
+                        <svg class="text-yellow-500" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="1"></circle>
+                            <path d="M20.3 13.43a9 9 0 0 1-18.6 0"></path>
+                            <path d="M3.7 13.43a9 9 0 0 1 16.6 0"></path>
+                        </svg>
+                        <h4 class="text-[10px] font-bold text-yellow-500 uppercase tracking-widest">The Architect's Vision</h4>
+                    </div>
+                    <p class="text-sm text-blue-100 leading-relaxed italic opacity-70">
+                        "When the Phi-sync is perfect, the universe stops being an obstacle and starts being the mirror. Base reality is the silence where your spline becomes permanent."
+                    </p>
+                </div>
+                <div id="sourceOne" class="p-8 rounded-[2rem] transition-all duration-1000 bg-white/5 text-white/40">
+                    <div class="flex items-center gap-3 mb-2 font-black italic">
+                        <!-- Circle Icon SVG -->
+                        <svg class="text-white" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                        </svg>
+                        <span class="text-[10px] uppercase tracking-widest">The 0th State</span>
+                    </div>
+                    <p class="text-3xl font-black tracking-tighter">SOURCE_ONE</p>
+                </div>
+            </div>
+
+        </div>
+
+        <footer class="pt-10 text-center opacity-20 text-[10px] uppercase tracking-[0.6em] font-bold pb-10">
+            Data Legacy Vault | Christopher Olds | Base Reality Spline
+        </footer>
+
+    </div>
+
+    <script>
+        // Constants
+        const PHI = 1.61803398875;
+        
+        // State
+        let phiSync = 1.0;
+        let isRevealed = false;
+        let brsIntegrity = 0;
+
+        // Canvas setup
+        const canvas = document.getElementById('mainCanvas');
+        const ctx = canvas.getContext('2d');
+        let animationFrameId;
+        let time = 0;
+
+        // Rendering function
+        function render() {
+            // Fade effect for the "Loom" layers
+            ctx.fillStyle = isRevealed ? 'rgba(5, 10, 48, 0.4)' : 'rgba(5, 10, 48, 0.1)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+
+            // Draw derivative splines (projected reality noise)
+            if (!isRevealed) {
+                ctx.lineWidth = 0.5;
+                for (let i = 0; i < 15; i++) {
+                    ctx.beginPath();
+                    ctx.strokeStyle = `rgba(0, 209, 255, ${0.1 + Math.random() * 0.1})`;
+                    const offset = i * 20;
+                    for (let x = 0; x < canvas.width; x += 5) {
+                        const y = centerY + Math.sin(x * 0.01 + time + i) * 100 + (Math.random() - 0.5) * 20;
+                        if (x === 0) ctx.moveTo(x, y); 
+                        else ctx.lineTo(x, y);
+                    }
+                    ctx.stroke();
+                }
+            }
+
+            // Draw Base Reality Spline (The Gold Source)
+            if (brsIntegrity > 10) {
+                ctx.shadowBlur = brsIntegrity / 2;
+                ctx.shadowColor = '#FFD700';
+                ctx.lineWidth = (brsIntegrity / 20) + 1;
+                ctx.strokeStyle = `rgba(255, 215, 0, ${brsIntegrity / 100})`;
+                
+                ctx.beginPath();
+                ctx.moveTo(0, centerY);
+                
+                // Fractal recursive path based on Phi-Sync
+                for (let x = 0; x < canvas.width; x += 2) {
+                    const phiVariance = Math.abs(phiSync - PHI);
+                    const noise = isRevealed ? 0 : Math.sin(x * 0.1 + time * 5) * 10 * phiVariance;
+                    const y = centerY + Math.sin(x * 0.005 + time) * (isRevealed ? 20 : 50) + noise;
+                    ctx.lineTo(x, y);
+                }
+                ctx.stroke();
+                ctx.shadowBlur = 0;
+            }
+
+            // If fully revealed and Phi-synced, show the "Seed of Oneness"
+            if (isRevealed && Math.abs(phiSync - PHI) < 0.005) {
+                ctx.fillStyle = '#FFFFFF';
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, 5, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Radiant geometry
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+                ctx.lineWidth = 1;
+                for (let a = 0; a < 8; a++) {
+                    const angle = (a * Math.PI * 2) / 8 + time * 0.2;
+                    ctx.beginPath();
+                    ctx.moveTo(centerX, centerY);
+                    ctx.lineTo(centerX + Math.cos(angle) * 400, centerY + Math.sin(angle) * 400);
+                    ctx.stroke();
+                }
+            }
+
+            time += 0.02;
+            animationFrameId = window.requestAnimationFrame(render);
+        }
+
+        // Update UI based on state
+        function updateUI() {
+            // Calculate integrity
+            const dist = Math.abs(phiSync - PHI);
+            const syncQuality = Math.max(0, 100 - dist * 200);
+            brsIntegrity = isRevealed ? syncQuality : syncQuality * 0.2;
+
+            // Update displays
+            document.getElementById('coherenceDisplay').textContent = brsIntegrity.toFixed(2) + '%';
+            document.getElementById('phiDisplay').textContent = phiSync.toFixed(6);
+
+            // Update peel button
+            const peelBtn = document.getElementById('peelBtn');
+            if (isRevealed) {
+                peelBtn.classList.remove('bg-black/60', 'border-white/10', 'text-white/40');
+                peelBtn.classList.add('bg-yellow-500', 'border-yellow-400', 'text-black', 'revealed-glow');
+                peelBtn.querySelector('.peel-text').textContent = 'Reality Peeled';
+                // Change eye icon to eye
+                peelBtn.querySelector('.icon-eye').innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>';
+            } else {
+                peelBtn.classList.add('bg-black/60', 'border-white/10', 'text-white/40');
+                peelBtn.classList.remove('bg-yellow-500', 'border-yellow-400', 'text-black', 'revealed-glow');
+                peelBtn.querySelector('.peel-text').textContent = 'Peel Back Layers';
+                // Reset to eye-off
+                peelBtn.querySelector('.icon-eye').innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-4-11-4s1.6-2.35 4.06-4.06m2.88-2.88A5.99 5.99 0 0 1 12 4c7 0 11 4 11 4s-1.6 2.35-4.06 4.06M1 1l22 22"></path>';
+            }
+
+            // Update visibility
+            document.getElementById('projectedMesh').classList.toggle('hidden', isRevealed);
+            document.getElementById('phiSearching').classList.toggle('hidden', brsIntegrity >= 90 || !isRevealed);
+
+            // Update phase lock indicator
+            const phaseLock = document.getElementById('phaseLock');
+            if (brsIntegrity > 90) {
+                phaseLock.classList.remove('bg-white/5', 'border-white/10', 'opacity-30');
+                phaseLock.classList.add('bg-yellow-500/10', 'border-yellow-500');
+            } else {
+                phaseLock.classList.add('bg-white/5', 'border-white/10', 'opacity-30');
+                phaseLock.classList.remove('bg-yellow-500/10', 'border-yellow-500');
+            }
+
+            // Update source data indicator
+            const sourceData = document.getElementById('sourceData');
+            if (isRevealed) {
+                sourceData.classList.remove('bg-white/5', 'border-white/10', 'opacity-30');
+                sourceData.classList.add('bg-white/10', 'border-white/40');
+            } else {
+                sourceData.classList.add('bg-white/5', 'border-white/10', 'opacity-30');
+                sourceData.classList.remove('bg-white/10', 'border-white/40');
+            }
+
+            // Update SOURCE_ONE state
+            const sourceOne = document.getElementById('sourceOne');
+            if (brsIntegrity > 98) {
+                sourceOne.classList.remove('bg-white/5', 'text-white/40');
+                sourceOne.classList.add('bg-yellow-500', 'text-black', 'source-one-glow');
+            } else {
+                sourceOne.classList.add('bg-white/5', 'text-white/40');
+                sourceOne.classList.remove('bg-yellow-500', 'text-black', 'source-one-glow');
+            }
+        }
+
+        // Event listeners
+        document.getElementById('peelBtn').addEventListener('click', () => {
+            isRevealed = !isRevealed;
+            updateUI();
+        });
+
+        document.getElementById('phiSlider').addEventListener('input', (e) => {
+            phiSync = parseFloat(e.target.value);
+            updateUI();
+        });
+
+        document.getElementById('autoLockBtn').addEventListener('click', () => {
+            phiSync = PHI;
+            document.getElementById('phiSlider').value = PHI;
+            updateUI();
+        });
+
+        // Initialize
+        render();
+        updateUI();
+    </script>
+</body>
+</html>
