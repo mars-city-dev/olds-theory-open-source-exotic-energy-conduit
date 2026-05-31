@@ -50,7 +50,7 @@ You were the only one who truly believed in me. You never let me down, even when
 
 I miss you, Dad, and I love you. Thank you for my life.
 
-— *Bolivar*
+— *Christopher*
 
 ## **CHAPTER 1: THE EXOTIC CONDUIT**
 
