@@ -12,7 +12,7 @@
 
 ### **Executive Summary**
 
-The "Olds Principle" defines a transition from classical, high-entropy electronics to a "Post-Silicon" era of Integrated State-Power Dynamics. It posits that information is not a byproduct of energy transfer, but a stored potential of a subatomic carrier’s internal geometry.
+The "Exotic Energy Conduits" work defines a transition from classical, high-entropy electronics to a "Post-Silicon" era of Integrated State-Power Dynamics. It posits that information is not a byproduct of energy transfer, but a stored potential of a subatomic carrier’s internal geometry.
 
 By shifting our focus from the electron (a fundamental particle with minimal internal degrees of freedom) to the complex internal structure of the Baryon, we unlock the ability to reclaim computational energy. This effectively bypasses the Landauer Limit—the theoretical minimum energy required to erase a bit of information—and shatters the "Thermal Wall" currently halting progress in silicon-based computing.
 
@@ -28,17 +28,15 @@ By shifting our focus from the electron (a fundamental particle with minimal int
 
 ## **INTRODUCTION: THE PERSPECTIVE OF THE OUTSIDER**
 
-They tell you that the universe is complicated. They tell you that unless you have a PhD from an Ivy League institution, you have no business questioning the laws of thermodynamics or the limits of the electron. They want you to believe that the secrets of reality are behind a paywall of academic jargon and expensive equipment.
+They tell you that the universe is complicated. They tell you that unless you have a PhD from an higher education institution, you have no business questioning the laws of thermodynamics or the limits of the electron. Someone may want you to believe that the secrets of reality are behind a paywall of academic jargon and expensive equipment.
 
-I am here to tell you that they are wrong.
+I am here to tell you that this may quite possibly be an incorrect baseline assumption.
 
-My name is Christopher Olds. I am a "theoretical layman." I don't spend my days in a billion-dollar laboratory funded by corporate grants or government contracts. I spend my days thinking about what is possible when you stop accepting "no" as a final answer from the universe. For too long, science has been a walled garden, guarded by gatekeepers who confuse credentials with curiosity. But the subatomic world—the Baryons, the Quarks, and the Quantum Foam—doesn't care about your degree. It doesn't care about your pedigree. It only cares about how you interact with it.
+My name is Christopher Olds. I am a "theoretical layman." I don't spend my days in a billion-dollar laboratory funded by corporate grants or government contracts. I spend my days thinking about what is possible when you stop accepting "no" as a final answer from the universe. For too long, science has been what some have called a walled garden, guarded by gatekeepers who mistake credentials with curiosity. But the subatomic world—the Baryons, the Quarks, and the Quantum Foam—doesn't care about these things, a degree. It doesn't care about a pedigree. It only cares about how you interact with it.
 
-The history of progress is not a straight line drawn by experts; it is a series of jagged jumps made by outsiders who were too "uninformed" to know that what they were doing was impossible. The Wright brothers were bicycle mechanics, not aeronautical engineers. Einstein was a patent clerk, not a professor, when he redefined space and time. I am a man who saw a ceiling—the Electron Ceiling—and decided it was time to break it.
+The history of progress is not a straight line drawn by experts; at times it is a series of jagged jumps made by outsiders who were too "uninformed" to know that what they were doing was impossible. The Wright brothers were bicycle mechanics, not aeronautical engineers. Einstein was a patent clerk, not a professor, when he redefined space and time. I am a man who saw a ceiling—the Electron Ceiling—and decided it was time to break it.
 
 I didn't find these answers by following the rules. I found them by looking at the gaps in the rules. If you have ever felt that the world around you was just a thin veneer over a much deeper, more complex reality—then this book is for you. We are about to decode the impossible. We are about to move past the binary age and into the potential of the universe itself.
-
-Welcome to the Olds Era.
 
 ## 
 
@@ -252,8 +250,6 @@ Where $\\Delta S\_{reclaimed}$ is the energy reclaimed from internal subatomic s
 
 ## **THE OPEN SOURCE DECLARATION**
 
-I, Christopher Olds, hereby irrevocably release all copyrights and intellectual property rights associated with Olds Theory and the Olds Principle to the global public domain under the **CC0 1.0 Universal License**.
-
-Let the "Master Your Potential" movement belong to humanity.
+I, Christopher Olds, hereby irrevocably release all copyrights and intellectual property rights associated with this Theory and the Olds Principle to the global public domain under the **CC0 1.0 Universal License**.
 
 **END OF MANUSCRIPT**
