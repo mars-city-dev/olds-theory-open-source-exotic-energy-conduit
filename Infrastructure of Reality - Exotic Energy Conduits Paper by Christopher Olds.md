@@ -1,12 +1,12 @@
 **Analytical Derivation of Rigid Baryonic Conduits from** *SU*(3) **Yang-Mills Theory: A Pathway to the Mass Gap** 
 
-Theoretical Engineering Division 
+Theoretical Engineering  
 
 June 1, 2026 
 
 **Abstract** 
 
-This paper presents a novel analytical framework addressing the Yang-Mills Mass Gap Mil lennium Prize problem. By performing a Wilsonian Renormalization Group flow on the mi croscopic *SU*(3) Euclidean partition function, we demonstrate that the high-energy gluonic degrees of freedom condense into a macroscopic network of discrete, one-dimensional flux tubes termed ”Conduits.” Crucially, we prove via a one-loop heat kernel expansion that the intrinsic thickness of the color-electric field dynamically generates a finite rigidity (extrinsic curvature) term in the effective action. We demonstrate that this finite rigidity inherently prevents the topological conduits from shrinking to massless points, thereby establishing a strictly positive lower bound on the energy spectrum (*E*min *\>* 0\) and mathematically guar anteeing the existence of the Mass Gap (∆ *\>* 0). Furthermore, the *SU*(3) Haar measure mandates that physical conduits representing baryonic matter must meet at anti-symmetric Y-junctions, naturally enforcing color neutrality. 
+This paper presents a novel analytical framework addressing the Yang-Mills Mass Gap Millennium Prize problem. By performing a Wilsonian Renormalization Group flow on the microscopic *SU*(3) Euclidean partition function, we demonstrate that the high-energy gluonic degrees of freedom condense into a macroscopic network of discrete, one-dimensional flux tubes termed ”Conduits.” Crucially, we prove via a one-loop heat kernel expansion that the intrinsic thickness of the color-electric field dynamically generates a finite rigidity (extrinsic curvature) term in the effective action. We demonstrate that this finite rigidity inherently prevents the topological conduits from shrinking to massless points, thereby establishing a strictly positive lower bound on the energy spectrum (*E*min *\>* 0\) and mathematically guaranteeing the existence of the Mass Gap (∆ *\>* 0). Furthermore, the *SU*(3) Haar measure mandates that physical conduits representing baryonic matter must meet at anti-symmetric Y-junctions, naturally enforcing color neutrality. 
 
 **1 Introduction** 
 
@@ -26,7 +26,7 @@ Z
 *d*2*ξ*   
 q   
 det(*∂αXµ∂βXµ*) (1) 1  
-where *σ* is the string tension. While the Nambu-Goto string provides an elegant heuristic for confinement, it suffers from fatal flaws when proposed as a fundamental description of the QCD vacuum. Most notably, quantizing the Nambu-Goto string outside of its critical dimen sion (*D* \= 26\) introduces a tachyonic ground state. Furthermore, an infinitely thin string pos sesses no intrinsic resistance to bending, leading to a ”crumpling transition” where the string fragments into space-filling curves, destroying the smooth flux tube picture required for linear confinement. 
+where *σ* is the string tension. While the Nambu-Goto string provides an elegant heuristic for confinement, it suffers from fatal flaws when proposed as a fundamental description of the QCD vacuum. Most notably, quantizing the Nambu-Goto string outside of its critical dimension (*D* \= 26\) introduces a tachyonic ground state. Furthermore, an infinitely thin string possesses no intrinsic resistance to bending, leading to a ”crumpling transition” where the string fragments into space-filling curves, destroying the smooth flux tube picture required for linear confinement. 
 
 These failures arise because the color electric field does not collapse into an infinitely thin, one-dimensional mathematical line. The gluonic medium possesses an intrinsic transverse profile—a ”thickness”—dictated by the inverse of the mass gap itself. 
 
@@ -34,8 +34,7 @@ These failures arise because the color electric field does not collapse into an 
 
 To accurately model the non-perturbative IR dynamics of *SU*(3) Yang-Mills theory, we must move beyond the infinitely thin string paradigm. This paper introduces the **Conduit Design**: an effective framework that models baryonic structure as a network of discrete, topological flux tubes (”conduits”) characterized by two vital physical properties: **finite rigidity** and **anti symmetric topological junctions**. 
 
-**I. Finite Rigidity (Extrinsic Curvature):** Unlike standard strings, a physical conduit of gluonic flux must resist sharp bends. We model this by incorporating an extrinsic curvature, or rigidity, term into the effective action, akin to the Polyakov-Kleinert string model:   
-Z 
+**I. Finite Rigidity (Extrinsic Curvature):** Unlike standard strings, a physical conduit of gluonic flux must resist sharp bends. We model this by incorporating an extrinsic curvature, or rigidity, term into the effective action, akin to the Polyakov-Kleinert string model: Z 
 
 *S*Conduit \=   
 *d*2*ξ√~~g~~* *σ* \+1*αK*2 (2) 
@@ -82,7 +81,6 @@ closed contour *C*:
 *ig*   
 I *C*   
 *Aµdxµ* 
-
 
 (6) 
 
